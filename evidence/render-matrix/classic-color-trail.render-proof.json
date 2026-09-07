@@ -5,20 +5,20 @@
   "sourcePackageSha256": "cdcc485ff83fa3514d6f92de2625584651a4a2ecd111f28d065c1685c1a9a0b3",
   "remotePackageSha256": "cdcc485ff83fa3514d6f92de2625584651a4a2ecd111f28d065c1685c1a9a0b3",
   "rig": "intent-ops-buzz/omarchy-rig",
-  "runId": "omatrail-1954421",
-  "rawShellLogSha256": "0cfac627fc0bc88dbc2ae4b99575de3de626604a60606540bff7c4d0f791e011",
+  "runId": "omatrail-1979478",
+  "rawShellLogSha256": "3c91d36ca7c2afbd54095902908de3d67503d57c90d0809f1e81af06996c864f",
   "packageBoundary": "exact tracked HEAD archive",
-  "fixture": "hunt-save.json",
+  "fixture": "trail-save.json",
   "displayModeOverride": "Color Deluxe",
-  "rulesProfileOverride": "omatrail",
+  "rulesProfileOverride": "classic-1978",
   "evidenceBoundary": "isolated real Omarchy shell and QML under a dedicated headless compositor; plugin-specific fixture hook when present; live plugin IPC toggle; direct full-frame grim capture with no crop or image post-processing",
   "visualInspection": {
     "status": "pending",
-    "previewSha256": "a54e11125db2576610e097222fa44aa4e05ed65854d36bcfcc80d0f84f230c72",
+    "previewSha256": "bc1d89fc3a4979db285ffb33da332a0863d5f39d8859e00d25f7800b58b935c3",
     "checks": []
   },
-  "previewSha256": "a54e11125db2576610e097222fa44aa4e05ed65854d36bcfcc80d0f84f230c72",
+  "previewSha256": "bc1d89fc3a4979db285ffb33da332a0863d5f39d8859e00d25f7800b58b935c3",
   "dimensions": "1280 x 720",
   "nonblackCoverage": 1,
-  "capturedAt": "2026-09-07T15:54:26Z"
+  "capturedAt": "2026-09-07T16:03:55Z"
 }

@@ -1,23 +1,24 @@
 {
-  "fingerprint": "0c70a77496d1b10344c32fbcfbd4947159e05fce6bccd1c7842d26e2f0a42081",
-  "sourceCommit": "42a56b01de9966a4716908cfafe9ebe2cd4f0687",
-  "sourceDirty": true,
-  "sourcePackageSha256": "5278ca3154cb6af53a240336bec5aa4e5fe14faa86760903506aa44f59bfe55d",
-  "remotePackageSha256": "5278ca3154cb6af53a240336bec5aa4e5fe14faa86760903506aa44f59bfe55d",
+  "fingerprint": "751a97fb139d0e0f958075e6733c980725ef1dc61fa7d15706f18f90b1cc4812",
+  "sourceCommit": "f7ee38f4ac29cca6aa94bc0ac1f433584879a256",
+  "sourceDirty": false,
+  "sourcePackageSha256": "cdcc485ff83fa3514d6f92de2625584651a4a2ecd111f28d065c1685c1a9a0b3",
+  "remotePackageSha256": "cdcc485ff83fa3514d6f92de2625584651a4a2ecd111f28d065c1685c1a9a0b3",
   "rig": "intent-ops-buzz/omarchy-rig",
-  "runId": "omatrail-909990",
-  "rawShellLogSha256": "36369e069bce7507d95563a71b1ca4c79fa2d32a29c5c8b6d15178c29b89ad82",
-  "packageBoundary": "development runtime tree; generated evidence, proof receipts, reports, tests, developer scripts, and marketplace preview excluded",
+  "runId": "omatrail-1953062",
+  "rawShellLogSha256": "2739bee00b0575dbdcc5982f3bacafc108eaa1b40e530475bcfe5479c224d2fe",
+  "packageBoundary": "exact tracked HEAD archive",
   "fixture": "ending-save.json",
   "displayModeOverride": "Green Monitor",
+  "rulesProfileOverride": "omatrail",
   "evidenceBoundary": "isolated real Omarchy shell and QML under a dedicated headless compositor; plugin-specific fixture hook when present; live plugin IPC toggle; direct full-frame grim capture with no crop or image post-processing",
   "visualInspection": {
     "status": "pending",
-    "previewSha256": "73743e849364bf5b8ca983c6a5f7dcaa1d8a2bf0f0a6d9ac4efa5cda846fe0d9",
+    "previewSha256": "26497b57fc3cdbc1a94b0592b09b26540b848b9e0432f295d045b8e806f48b61",
     "checks": []
   },
-  "previewSha256": "73743e849364bf5b8ca983c6a5f7dcaa1d8a2bf0f0a6d9ac4efa5cda846fe0d9",
+  "previewSha256": "26497b57fc3cdbc1a94b0592b09b26540b848b9e0432f295d045b8e806f48b61",
   "dimensions": "1280 x 720",
   "nonblackCoverage": 0.874065,
-  "capturedAt": "2026-09-07T05:14:24Z"
+  "capturedAt": "2026-09-07T15:53:42Z"
 }
