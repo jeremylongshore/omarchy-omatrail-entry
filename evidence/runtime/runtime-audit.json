@@ -1,15 +1,15 @@
 {
-  "fingerprint": "0c70a77496d1b10344c32fbcfbd4947159e05fce6bccd1c7842d26e2f0a42081",
-  "sourceCommit": "42a56b01de9966a4716908cfafe9ebe2cd4f0687",
-  "sourceDirty": true,
-  "sourcePackageSha256": "5278ca3154cb6af53a240336bec5aa4e5fe14faa86760903506aa44f59bfe55d",
-  "remotePackageSha256": "5278ca3154cb6af53a240336bec5aa4e5fe14faa86760903506aa44f59bfe55d",
+  "fingerprint": "751a97fb139d0e0f958075e6733c980725ef1dc61fa7d15706f18f90b1cc4812",
+  "sourceCommit": "25b828301d6c950284d10765638aba0e934c79e2",
+  "sourceDirty": false,
+  "sourcePackageSha256": "40c2abf949d6f25346522dc67e00b2fb710c0851aff9cd35d39cd321f97d5a77",
+  "remotePackageSha256": "40c2abf949d6f25346522dc67e00b2fb710c0851aff9cd35d39cd321f97d5a77",
   "rig": "intent-ops-buzz/omarchy-rig",
-  "runId": "omatrail-940182",
-  "rawShellLogSha256": "a28aa52641463a63ca8124aaac737319f7e608501daf469593ca771d7c3381db",
+  "runId": "omatrail-1983636",
+  "rawShellLogSha256": "ab744094dd94ad7a57dd5cee58ce80e20a8a40f663ad884b696bb71b27e62904",
   "fixture": "hunt-save.json",
   "evidenceBoundary": "isolated real Omarchy shell; live local IPC; active, hidden, reopened, and restarted lifecycle; process and TCP observations",
-  "observedAt": "2026-09-07T05:21:27Z",
+  "observedAt": "2026-09-07T16:06:34Z",
   "audit": {
     "schemaVersion": 1,
     "checks": {
@@ -39,7 +39,8 @@
               "seed": 1848,
               "day": 1,
               "miles": 0,
-              "targetIndex": 1
+              "targetIndex": 1,
+              "rulesProfile": "omatrail"
             },
             "hunt": {
               "phase": "ready",
@@ -60,7 +61,8 @@
               "seed": 1848,
               "day": 1,
               "miles": 0,
-              "targetIndex": 1
+              "targetIndex": 1,
+              "rulesProfile": "omatrail"
             },
             "hunt": {
               "phase": "ready",
@@ -81,7 +83,8 @@
               "seed": 1848,
               "day": 1,
               "miles": 0,
-              "targetIndex": 1
+              "targetIndex": 1,
+              "rulesProfile": "omatrail"
             },
             "hunt": {
               "phase": "ready",
@@ -102,7 +105,8 @@
               "seed": 1848,
               "day": 1,
               "miles": 0,
-              "targetIndex": 1
+              "targetIndex": 1,
+              "rulesProfile": "omatrail"
             },
             "hunt": {
               "phase": "ready",
@@ -123,7 +127,8 @@
               "seed": 1848,
               "day": 1,
               "miles": 0,
-              "targetIndex": 1
+              "targetIndex": 1,
+              "rulesProfile": "omatrail"
             },
             "hunt": {
               "phase": "ready",
@@ -143,7 +148,8 @@
           "seed": 1848,
           "day": 1,
           "miles": 0,
-          "targetIndex": 1
+          "targetIndex": 1,
+          "rulesProfile": "omatrail"
         },
         "hunt": {
           "phase": "ready",
@@ -161,7 +167,8 @@
           "seed": 1848,
           "day": 1,
           "miles": 0,
-          "targetIndex": 1
+          "targetIndex": 1,
+          "rulesProfile": "omatrail"
         },
         "hunt": {
           "phase": "playing",
@@ -179,7 +186,8 @@
           "seed": 1848,
           "day": 1,
           "miles": 0,
-          "targetIndex": 1
+          "targetIndex": 1,
+          "rulesProfile": "omatrail"
         },
         "hunt": {
           "phase": "paused",
@@ -197,7 +205,8 @@
           "seed": 1848,
           "day": 1,
           "miles": 0,
-          "targetIndex": 1
+          "targetIndex": 1,
+          "rulesProfile": "omatrail"
         },
         "hunt": {
           "phase": "paused",
@@ -215,7 +224,8 @@
           "seed": 1848,
           "day": 1,
           "miles": 0,
-          "targetIndex": 1
+          "targetIndex": 1,
+          "rulesProfile": "omatrail"
         },
         "hunt": {
           "phase": "playing",
@@ -233,7 +243,8 @@
           "seed": 1848,
           "day": 1,
           "miles": 0,
-          "targetIndex": 1
+          "targetIndex": 1,
+          "rulesProfile": "omatrail"
         },
         "hunt": {
           "phase": "ready",
@@ -242,17 +253,17 @@
       }
     },
     "state": {
-      "beforeSha256": "ab251d2c4ca50fca3d41402dde0059161a3648ce5415c34842278bcc2810eb38",
-      "afterSha256": "ab251d2c4ca50fca3d41402dde0059161a3648ce5415c34842278bcc2810eb38"
+      "beforeSha256": "ac4603f91a936581da5b498bf3d9df87bd599da06f8cfaa3273dc7618a713ac7",
+      "afterSha256": "ac4603f91a936581da5b498bf3d9df87bd599da06f8cfaa3273dc7618a713ac7"
     },
     "resources": {
-      "rssBeforeKb": 230656,
-      "rssAfterKb": 251352,
+      "rssBeforeKb": 233120,
+      "rssAfterKb": 261432,
       "childProcessesBefore": 0,
       "childProcessesAfter": 0,
       "tcpConnectionsBefore": 0,
       "tcpConnectionsAfter": 0,
-      "threeOpenHideCyclesMs": 420
+      "threeOpenHideCyclesMs": 443
     }
   }
 }
