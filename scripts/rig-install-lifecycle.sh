@@ -98,6 +98,7 @@ plugin_row() {
   local plugins=""
   for _ in $(seq 1 15); do
     if plugins=$(omarchy-shell shell listPlugins 2>/dev/null); then
+      [[ -n "$plugins" ]] || plugins="[]"
       printf '%s\n' "$plugins" | jq -c --arg id "$ID" '[.[] | select(.id == $id)]'
       return
     fi
