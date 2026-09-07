@@ -4,8 +4,8 @@
   "private": true,
   "description": "Offline development and verification harness for the omaTrail Omarchy game",
   "scripts": {
-    "test": "c8 --all --include=HuntingRules.js --include=JourneyRules.js --check-coverage --lines 95 --functions 95 --branches 90 --statements 95 node --test tests/*.test.js",
-    "test:race": "for run in 1 2 3; do node --test --test-concurrency=4 tests/*.test.js || exit; done",
+    "test": "c8 --all --include=HuntingRules.js --include=JourneyRules.js --check-coverage --lines 95 --functions 95 --branches 90 --statements 95 node --test tests/*.test.js tests/*.suite.js",
+    "test:race": "for run in 1 2 3; do node --test --test-concurrency=4 tests/*.test.js tests/*.suite.js || exit; done",
     "test:mutation": "stryker run",
     "test:balance": "node scripts/balance-sim.js --runs 100000 --output reports/balance/balance-100000.json",
     "test:e2e": "bash e2e/buzz.sh",

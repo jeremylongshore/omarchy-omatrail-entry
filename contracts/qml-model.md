@@ -7,7 +7,7 @@ access. Every gameplay change is an explicit action against cloned state.
 
 `tests/contract.test.js` derives QML calls and checks their Node export surface.
 The same test verifies the manifest, module identity, entry points, launcher,
-and offline runtime claim. `tests/journey.test.js` and `tests/hunting.test.js`
+and offline runtime claim. `tests/journey.suite.js` and `tests/hunting.suite.js`
 prove deterministic replay and presentation-profile invariance.
 
 Persistence accepts only schema version 1, caps UTF-8 documents at 64 KiB, and

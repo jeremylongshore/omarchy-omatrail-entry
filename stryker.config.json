@@ -20,7 +20,7 @@
   ],
   "testRunner": "command",
   "commandRunner": {
-    "command": "node --test --test-skip-pattern='10,000 generated fields|a careful supply' tests/hunting.test.js tests/journey.test.js"
+    "command": "node --test --test-skip-pattern='10,000 generated fields|a careful supply' tests/hunting.suite.js tests/journey.suite.js"
   },
   "mutator": {
     "excludedMutations": ["StringLiteral", "ObjectLiteral"]
