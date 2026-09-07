@@ -1,15 +1,15 @@
 {
   "fingerprint": "751a97fb139d0e0f958075e6733c980725ef1dc61fa7d15706f18f90b1cc4812",
-  "sourceCommit": "25b828301d6c950284d10765638aba0e934c79e2",
+  "sourceCommit": "ac556c96922c047cdb0dd52dfe33e39b1fc855f9",
   "sourceDirty": false,
-  "sourcePackageSha256": "40c2abf949d6f25346522dc67e00b2fb710c0851aff9cd35d39cd321f97d5a77",
-  "remotePackageSha256": "40c2abf949d6f25346522dc67e00b2fb710c0851aff9cd35d39cd321f97d5a77",
+  "sourcePackageSha256": "879b1888fd347bb548ff6c404a9a7ba3ed8e336c709d7ae9e8053d6dcb9e4f8d",
+  "remotePackageSha256": "879b1888fd347bb548ff6c404a9a7ba3ed8e336c709d7ae9e8053d6dcb9e4f8d",
   "rig": "intent-ops-buzz/omarchy-rig",
-  "runId": "omatrail-1983636",
-  "rawShellLogSha256": "ab744094dd94ad7a57dd5cee58ce80e20a8a40f663ad884b696bb71b27e62904",
+  "runId": "omatrail-2083687",
+  "rawShellLogSha256": "42a4c814f5d125aa9c6d685ab4f4b77642aa57ac1ff818ae1e695b48eba89c3f",
   "fixture": "hunt-save.json",
   "evidenceBoundary": "isolated real Omarchy shell; live local IPC; active, hidden, reopened, and restarted lifecycle; process and TCP observations",
-  "observedAt": "2026-09-07T16:06:34Z",
+  "observedAt": "2026-09-07T16:55:15Z",
   "audit": {
     "schemaVersion": 1,
     "checks": {
@@ -191,7 +191,7 @@
         },
         "hunt": {
           "phase": "paused",
-          "tick": 10
+          "tick": 11
         }
       },
       "reopened": {
@@ -210,7 +210,7 @@
         },
         "hunt": {
           "phase": "paused",
-          "tick": 10
+          "tick": 11
         }
       },
       "resumed": {
@@ -229,7 +229,7 @@
         },
         "hunt": {
           "phase": "playing",
-          "tick": 20
+          "tick": 21
         }
       },
       "restarted": {
@@ -257,13 +257,13 @@
       "afterSha256": "ac4603f91a936581da5b498bf3d9df87bd599da06f8cfaa3273dc7618a713ac7"
     },
     "resources": {
-      "rssBeforeKb": 233120,
-      "rssAfterKb": 261432,
+      "rssBeforeKb": 232680,
+      "rssAfterKb": 248504,
       "childProcessesBefore": 0,
       "childProcessesAfter": 0,
       "tcpConnectionsBefore": 0,
       "tcpConnectionsAfter": 0,
-      "threeOpenHideCyclesMs": 443
+      "threeOpenHideCyclesMs": 454
     }
   }
 }
