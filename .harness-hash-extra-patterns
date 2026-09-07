@@ -17,6 +17,7 @@ scripts/gates/*.sh
 scripts/gates/lib/preamble.sh
 e2e/*.sh
 tests/*.test.js
+tests/*.suite.js
 tests/TESTING.md
 tests/RTM.md
 tests/PERSONAS.md
