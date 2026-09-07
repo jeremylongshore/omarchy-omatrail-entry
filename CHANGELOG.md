@@ -1,26 +1,23 @@
 # Changelog
 
-Notable changes to this plugin.
+Notable changes to omaTrail. The project follows Semantic Versioning.
 
-Entries are derived from this repository's commit history, so every line
-corresponds to a real change. The format follows Keep a Changelog and the
-project uses Semantic Versioning.
-
-Regenerate after a release with:
+Regenerate release entries with:
 
 ```bash
-scripts/gen-changelog.py . "<Plugin Name>" "<version>"
+scripts/gen-changelog.sh . "omaTrail" "0.1.0"
 ```
-
-The generator normalises em and en dashes, because a changelog is shipped prose
-and gate c28 refuses them.
 
 ## [Unreleased]
 
-Nothing yet.
-
-## [1.0.0] - unreleased
-
 ### Added
 
-- Initial plugin.
+- Three-act fictional composite trail with party, store, travel, events, rivers,
+  hunting, repair, rest, victory, and loss flows.
+- Green Monitor and Color Deluxe profiles over identical game state.
+- Bounded local save with one last-good recovery copy.
+- Deterministic tests, policy playthroughs, Omarchy gates, and Buzz rig lanes.
+
+## [0.1.0] - unreleased
+
+Initial development release.

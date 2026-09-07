@@ -2,40 +2,35 @@
 
 ## Reporting
 
-Report a vulnerability privately through this repository's **Security** tab,
-using *Report a vulnerability*. Please do not open a public issue first.
+Use GitHub's private vulnerability reporting for this repository. Do not place
+a suspected vulnerability in a public issue before the maintainer can review
+it. This is a personal project, so no formal response-time promise is made.
 
-Expect an acknowledgement within a few days. This is a personal project, not a
-staffed product, and that is stated plainly rather than promised around.
+## Runtime boundary
 
-## What this plugin is, in security terms
+omaTrail is QML loaded without a sandbox into the long-running Omarchy
+Quickshell process. It therefore runs with the desktop user's access.
 
-It is QML running **unsandboxed inside a long-lived Quickshell process** on your
-desktop, with whatever access your user has. That is true of every Omarchy
-plugin, and it is why the rules below are treated as invariants rather than
-preferences.
+The shipped game:
 
-## Invariants
+- makes no network requests and includes no telemetry or accounts;
+- invokes only the repository-owned save helper with fixed operation arguments;
+- parses gameplay entirely in pure deterministic JavaScript;
+- bounds serialized save data to 64 KiB and rejects malformed, incompatible,
+  oversized, or structurally invalid save documents;
+- pins every state-path directory descriptor and rejects symlink traversal;
+- opens reads once with `O_NOFOLLOW|O_NONBLOCK`, then validates and bounds that
+  same descriptor;
+- publishes through a private `O_EXCL|O_NOFOLLOW` temporary descriptor held
+  through write and `fsync`, followed by descriptor-relative replacement;
+- serializes operations through a private same-owner lock;
+- keeps one last-good save for recovery;
+- renders dynamic strings as `Text.PlainText` with a width and overflow rule.
 
-- **No secret in a process argument.** `/proc/<pid>/cmdline` is world-readable,
-  so any credential reaches its subprocess through stdin. An environment
-  variable is better than an argument, because `/proc/<pid>/environ` is
-  owner-only, but stdin is the standard used here.
-- **Untrusted text cannot render markup or escape its row.** Anything from a
-  network response or another program is `Text.PlainText`, width-bound, and
-  elided.
-- **Bounded input.** Any read whose size is controlled elsewhere is capped by
-  count and by bytes, at the reader and again at the parser, because this
-  process never restarts. When a bound truncates, the panel says so.
-- **No shell built from data.** Subprocesses take an argv array. Where a shell
-  is unavoidable, values are quoted.
-- **Network is an allowlist.** Only the hosts documented in the README, over
-  https, with no redirect following.
-- **State is disposable.** Everything under `~/.local/state/omarchy/` for this
-  plugin can be deleted at any time and is rebuilt on the next poll.
+The save is local game progress, not a credential store. Use New Expedition
+after a completed or abandoned run to delete it through the same helper.
 
-## What is not claimed
+## Evidence limits
 
-Passing the gate lane, `omarchy-plugin-validate`, or `qmllint` is not a security
-audit. Those are static checks; two of them skip entirely when their binaries
-are absent. Nothing here has had an external review.
+The vendored gates, Omarchy validator, qmllint, unit tests, and Buzz render each
+cover different defect classes. None alone is a general security audit.

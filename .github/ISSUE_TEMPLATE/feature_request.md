@@ -6,12 +6,12 @@ labels: enhancement
 
 **What you want to be able to see or do**
 
-**Where it belongs**
+**Where it belongs in the game**
 
-The bar pill is for one glanceable fact. The panel is for the detail behind it.
-Which is this?
+Is this journey setup, the outfitter, trail travel, an event, a river, hunting,
+an ending, accessibility, or a display profile change?
 
-**Is the data available without a key?**
+**How it changes player decisions**
 
-This plugin family avoids anything requiring a paid or personal API key by
-default. If your idea needs one, say so; it is not automatically disqualifying.
+Explain the choice or tradeoff it creates. omaTrail remains offline and will not
+add accounts, telemetry, paid APIs, or network services.

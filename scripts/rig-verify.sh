@@ -31,22 +31,33 @@ fingerprint() {
     find . -type f \
       -not -path './.git/*' -not -path './tests/*' \
       -not -path './scripts/*' -not -path './node_modules/*' \
+      -not -path './.stryker-tmp/*' -not -path './coverage/*' \
+      -not -path './reports/*' \
       \( -name '*.qml' -o -name '*.js' -o -name 'manifest.json' -o -perm -u+x \) \
       -print0 2>/dev/null \
     | LC_ALL=C sort -z | xargs -0 cat 2>/dev/null | sha256sum | cut -d' ' -f1 )
 }
 FP="$(fingerprint)"
 SOURCE_COMMIT="$(git -C "$TARGET" rev-parse HEAD 2>/dev/null || printf unknown)"
-SOURCE_DIRTY=false
-if [[ "$SOURCE_COMMIT" == "unknown" ]] || \
-   [[ -n "$(git -C "$TARGET" status --porcelain --untracked-files=all -- '*.qml' '*.js' manifest.json bin 2>/dev/null)" ]]; then
-  SOURCE_DIRTY=true
+SOURCE_DIRTY=true
+if [[ "$SOURCE_COMMIT" != "unknown" ]] && \
+   [[ -z "$(git -C "$TARGET" status --porcelain --untracked-files=all 2>/dev/null)" ]]; then
+  SOURCE_DIRTY=false
 fi
 
 TGZ="$(mktemp -t rigcheck-XXXXXX.tgz)"
 trap 'rm -f "$TGZ"' EXIT
-tar czf "$TGZ" -C "$TARGET" --exclude=.git --exclude=tests --exclude=node_modules . || {
-  echo "rig-verify: could not package the tree" >&2; exit 2; }
+if [[ "$SOURCE_DIRTY" == false ]]; then
+  (set -o pipefail; git -C "$TARGET" archive --format=tar HEAD | gzip -n > "$TGZ") || {
+    echo "rig-verify: could not package committed HEAD" >&2; exit 2; }
+else
+  (set -o pipefail; tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner -cf - \
+    -C "$TARGET" --exclude=.git --exclude=tests --exclude=scripts --exclude=node_modules \
+    --exclude=.stryker-tmp --exclude=coverage --exclude=reports --exclude=evidence \
+    --exclude=.harness-hash --exclude=.rig-proof.json --exclude=.render-proof.json \
+    --exclude=.render-shell.log --exclude=preview.png . | gzip -n > "$TGZ") || {
+    echo "rig-verify: could not package the development tree" >&2; exit 2; }
+fi
 ARCHIVE_SHA="$(sha256sum "$TGZ" | cut -d' ' -f1)"
 
 echo "rig-verify: shipping to $HOST/$CONTAINER"

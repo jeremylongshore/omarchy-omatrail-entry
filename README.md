@@ -1,96 +1,162 @@
-# Omarchy Widget Template
+# omaTrail
 
-A batteries-included skeleton for an Omarchy bar widget. It carries the
-architecture and security patterns two shipped entries (Pit Wall, Crew Chief)
-earned the hard way, so a new widget starts from a state that already passes
-the pre-submit gates.
+[![Version](https://img.shields.io/badge/version-0.1.0-63ff73?style=flat-square)](CHANGELOG.md)
+[![Omarchy](https://img.shields.io/badge/Omarchy-plugin-0969da?style=flat-square)](https://omarchy.org)
+[![Runtime](https://img.shields.io/badge/runtime-offline-1f7a35?style=flat-square)](#privacy-and-saves)
+[![License](https://img.shields.io/badge/license-MIT-d8c06b?style=flat-square)](LICENSE)
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/U5S225PTME)
+<p align="center">
+  <img src="assets/banner.svg" alt="omaTrail: a pixel wagon crossing from Green Monitor into Color Deluxe" width="100%">
+</p>
 
-## What you get
+> Choose your way west.
 
-| File | Role |
+omaTrail is an offline frontier survival game built directly into the Omarchy
+shell. Open it from the bar, name a party of five, outfit a wagon, cross rivers,
+survive trail events, and hunt moving wildlife on the way to West Valley.
+
+<p align="center">
+  <a href="evidence/render-matrix/color-hunt.png">
+    <img src="preview.png" alt="omaTrail hunting in Color Deluxe mode" width="900">
+  </a>
+  <br>
+  <sub>Live 1280x720 capture from the Buzz Omarchy rig. Click for the full image.</sub>
+</p>
+
+## Two looks, one trail
+
+Switch between Green Monitor and Color Deluxe at any point, including during a
+hunt. Both profiles use the same deterministic rules and save file, so the
+choice is entirely visual.
+
+| Green Monitor | Color Deluxe |
 | --- | --- |
-| `BarWidget.qml` | Bar host. Owns the slot and pill button. Shape contract for shell summon/hide/toggle routing. Edit only `moduleName`. |
-| `Panel.qml` | Data lifecycle and popup UI. Fetch via `Process` + `StdioCollector`, parse in `Model.js`, fixed omakase constants, IPC handler, `KeyboardPanel` popup scaffold. |
-| `Model.js` | Pure data layer. Loads in Quickshell AND node, so the whole parse path unit-tests without a shell. `clean()` sanitizer included. |
-| `tests/` | Coverage, mutation, race stability, traceability, personas, journeys, and fail-closed gate regression harness. |
-| `manifest.json` | Placeholder manifest with a commented settings schema. |
-| `assets/banner.svg` | Deliberately obvious blueprint banner. Replace it with a theme-specific SVG that names and visually explains the generated plugin. |
-| `.github/workflows/test.yml` | CI: the node test suite on every push. |
+| [![Green Monitor trail](evidence/render-matrix/green-trail.png)](evidence/render-matrix/green-trail.png) | [![Color Deluxe trail](evidence/render-matrix/color-trail.png)](evidence/render-matrix/color-trail.png) |
+| [![Green Monitor hunting](evidence/render-matrix/green-hunt.png)](evidence/render-matrix/green-hunt.png) | [![Color Deluxe hunting](evidence/render-matrix/color-hunt.png)](evidence/render-matrix/color-hunt.png) |
 
-## Instantiate
+See the complete real-shell gallery for
+[events](evidence/render-matrix/color-event.png),
+[river crossings](evidence/render-matrix/green-river.png), and
+[endings](evidence/render-matrix/color-ending.png).
 
-```bash
-gh repo create YOURNAME/omarchy-your-widget-entry --template jeremylongshore/omarchy-widget-template --public --clone
-cd omarchy-your-widget-entry
-grep -rl 'YOURNAME\|widget-name\|WIDGET NAME' . | xargs sed -i 's/io.github.YOURNAME.widget-name/io.github.YOURNAME.your-widget/g'
-```
+## The journey
 
-Then replace the example fetch in `Panel.qml`, the parse functions in
-`Model.js`, and the placeholder fields in `manifest.json`.
+Lead five travelers across a 1,620-mile fictional composite route in 1848.
+Your choices shape who reaches West Valley and what it costs to get there.
 
-## The rules the template encodes
+1. **Leaving the Known** - Buy supplies at East Camp, judge the crossing at Oak
+   Fork, and learn whether preparation can survive first contact with the trail.
+2. **The Long Middle** - Cross the plains while distance, fatigue, disagreement,
+   storms, and scarce repairs grind down the party.
+3. **Last High Country** - Face the route's hardest river, mountain injuries,
+   dry country, and the accumulated consequences of every earlier decision.
 
-These are not style preferences. Each one maps to a defect that shipped in a
-real entry and had to be swept after the fact.
+The route and characters are original fictional composites. omaTrail does not
+claim to reproduce one specific historic journey.
 
-1. **Every network body parses in `Model.js`.** Pure functions, node-testable,
-   malformed input returns the empty shape so the panel keeps last-good state.
-2. **Every API string passes through `Model.clean()`** before a QML `Text`
-   sees it. Strips angle brackets (AutoText promotion) and control chars,
-   caps length.
-3. **Every `Text` that renders API data declares `textFormat:
-   Text.PlainText`.** AutoText sniffs strings for HTML; a hostile payload can
-   trigger outbound image fetches.
-4. **Every curl argv carries `--max-time` and `--max-filesize`.** An
-   unbounded body freezes the shell's UI thread on `JSON.parse`.
-5. **The pill never silently vanishes.** An unreachable API reads as
-   loading, not widget-gone. Return `""` from `label` only when the widget is
-   legitimately quiet.
-6. **Omakase constants over settings knobs.** Add a manifest settings schema
-   only for choices a user genuinely owns.
-7. **No em dashes, no private names, no stray tildes in anything shipped.**
-8. **Mutable local state needs object-identity proof.** A pathname can be
-   swapped by another process between validation and use. A plugin that stores
-   state must use a descriptor-bound lifecycle and red-proof final-file,
-   temporary-file, parent-swap, FIFO, and oversized-input cases. `mktemp + mv`
-   and a pathname `stat` are not sufficient evidence.
+## Gameplay
 
-## Pre-submit checklist
+- Five named travelers with health, fatigue, morale, and survival state
+- Four occupations, three difficulty levels, and four departure months
+- An outfitter selling oxen, food, ammunition, clothing, medicine, and parts
+- Pace, rations, weather, wagon wear, oxen fatigue, rest, and repairs
+- Eight authored event types with decisions and lasting consequences
+- Three river crossings with visible width, depth, current, and weather
+- Real-time hunting with moving wildlife, aiming, ammunition, carry limits,
+  spoilage, waste, expedition cost, and optional aim assist
+- Victory and loss summaries with survivors, losses, duration, resources,
+  avoidable waste, score, and replay seed
 
-On the dev box:
+## Install
+
+Once the repository is public, install and enable it with Omarchy:
 
 ```bash
-npm test                         # offline unit and gate-runner regression suite
-npm run test:race                # three concurrent clean repetitions
-npm run test:mutation            # mutation score must remain at least 90
-npm run audit                    # hash protection + deep audit + scan
-scripts/run-plugin-gates.sh .    # vendored, manifest-verified lane must PASS
+omarchy-plugin-add https://github.com/jeremylongshore/omarchy-omatrail-entry --enable
 ```
 
-The marketplace description is intentionally 500 characters because that is
-the current catalog allowance. Generated plugins must replace it with concrete
-product copy of the same length. Before writing it, replace
-`contracts/marketplace.md` with a claim-by-claim ledger linking each visible
-behavior, data/cadence statement, and trust boundary to shipped source and an
-executable test. Gate C43 also refuses a missing or placeholder banner and, at
-submission time, requires a focused 16:9 live preview whose
-bytes, run ID, raw shell-log hash, and clean source package match the committed
-render receipt. C43 remains blocked until the exact preview also carries the
-three-item, hash-bound visual inspection approval.
-
-On an Omarchy rig (the validator and qmllint live there):
+For local development, copy the runtime files from a clean checkout:
 
 ```bash
-scripts/rig-verify.sh             # validator + qmllint, receipt bound to source
-scripts/rig-render.sh . preview.png # real shell render + screenshot receipt
-scripts/approve-preview.sh          # inspect at marketplace scale + bind approval
+install -d "$HOME/.config/omarchy/plugins/omatrail"
+cp -R BarWidget.qml Overlay.qml JourneyView.qml TrailScene.qml HuntingBoard.qml \
+  OmatrailButton.qml SaveStore.qml JourneyRules.js HuntingRules.js bin manifest.json \
+  "$HOME/.config/omarchy/plugins/omatrail/"
 ```
 
-Only then draft the marketplace submission issue, and have a human approve
-the body before posting.
+Restart or reload the Omarchy shell, then add omaTrail to the bar through shell
+settings. The manifest ID is `io.github.jeremylongshore.omatrail`.
+
+## Controls
+
+| Context | Keyboard | Pointer |
+| --- | --- | --- |
+| Anywhere | `V` changes profile | Profile also follows plugin settings |
+| Journey | `Esc` closes, `Enter` performs the primary action, `1` to `5` choose event or river options | Choose supplies and trail actions |
+| Hunt | `WASD` moves, arrows aim, `Space` fires, `P` or `Esc` pauses, `Q` requests return, `H` toggles assist | Right-click to move; left-click to aim and fire; named controls pause, return, or toggle assist |
+
+## Privacy and saves
+
+omaTrail has no network calls, telemetry, account, daemon, or elevated access.
+It stores one bounded JSON save and one last-good backup through a private,
+descriptor-bound helper under:
+
+```text
+$XDG_STATE_HOME/omarchy/omatrail/
+```
+
+If `XDG_STATE_HOME` is unset, it uses
+`$HOME/.local/state/omarchy/omatrail/`. New Expedition deletes the primary save
+and backup after a completed or abandoned run.
+
+## Verification
+
+```bash
+npm ci
+npm test
+npm run test:race
+npm run test:mutation
+npm run test:balance
+npm run audit
+scripts/run-plugin-gates.sh .
+```
+
+The real-shell lane uses the Buzz Omarchy rig:
+
+```bash
+scripts/rig-verify.sh .
+scripts/rig-render.sh . preview.png
+scripts/rig-render-matrix.sh . evidence/render-matrix
+scripts/rig-runtime-audit.sh .
+scripts/approve-preview.sh
+```
+
+The offline suite covers deterministic rules, 10,000 hunting fields, hostile
+save handling, route and event outcomes, profile invariance, accessibility, and
+180 journey-policy simulations. The balance lane runs 100,000 fixed seeds
+through the real journey and hunting engines. The Buzz lane validates, lints,
+loads, toggles, and captures omaTrail inside a real Omarchy shell.
+
+The retained [render matrix](evidence/render-matrix/README.md) covers hunting,
+rivers, events, trail travel, and endings in both visual modes. The runtime lane
+also proves hunting timers pause while hidden, resume safely, and restore the
+exact persisted state after a shell restart.
+
+## Product blueprint
+
+The companion umbrella repository holds the Intent Blueprint source of truth:
+[project brief](https://github.com/intent-solutions-io/omarchy-plugins/blob/docs/omatrail-blueprint/000-docs/005-PP-PROD-omatrail-project-brief.md),
+[requirements](https://github.com/intent-solutions-io/omarchy-plugins/blob/docs/omatrail-blueprint/000-docs/006-PP-BREQ-omatrail-product-requirements.md),
+[architecture](https://github.com/intent-solutions-io/omarchy-plugins/blob/docs/omatrail-blueprint/000-docs/007-AT-ARCH-omatrail-system-architecture.md),
+[game experience](https://github.com/intent-solutions-io/omarchy-plugins/blob/docs/omatrail-blueprint/000-docs/008-AT-DSGN-omatrail-game-experience.md),
+and [test plan](https://github.com/intent-solutions-io/omarchy-plugins/blob/docs/omatrail-blueprint/000-docs/010-TQ-TEST-omatrail-test-plan.md).
+
+## Contributing and support
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development rules,
+[SUPPORT.md](SUPPORT.md) for help, and [SECURITY.md](SECURITY.md) for private
+vulnerability reporting.
 
 ## License
 
-MIT.
+MIT. See [LICENSE](LICENSE).

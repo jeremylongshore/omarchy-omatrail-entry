@@ -1,17 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-labelledby="title desc">
-  <title id="title">Widget Name</title>
-  <desc id="desc">Blueprint starter for a production Omarchy bar widget</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-labelledby="title description">
+  <title id="title">omaTrail</title>
+  <desc id="description">A pixel wagon crosses from a green monitor prairie into a color deluxe sunset.</desc>
   <defs>
-    <linearGradient id="gridGlow" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#18263a"/>
-      <stop offset="1" stop-color="#0b111a"/>
+    <linearGradient id="splitSky" x1="0" x2="1">
+      <stop offset="0" stop-color="#020603"/>
+      <stop offset="0.5" stop-color="#07150a"/>
+      <stop offset="0.505" stop-color="#35566b"/>
+      <stop offset="1" stop-color="#d88b56"/>
+    </linearGradient>
+    <linearGradient id="splitGround" x1="0" x2="1">
+      <stop offset="0" stop-color="#14351b"/>
+      <stop offset="0.5" stop-color="#1f7a35"/>
+      <stop offset="0.505" stop-color="#80663c"/>
+      <stop offset="1" stop-color="#d8c06b"/>
     </linearGradient>
   </defs>
-  <rect width="1280" height="360" fill="url(#gridGlow)"/>
-  <path d="M0 72h1280M0 144h1280M0 216h1280M0 288h1280M128 0v360M256 0v360M384 0v360M512 0v360M640 0v360M768 0v360M896 0v360M1024 0v360M1152 0v360" stroke="#213b57" stroke-width="1"/>
-  <path d="M92 244V102h212v142zM118 218h160V128H118zM338 102h74v142h-74z" fill="none" stroke="#5ad4ff" stroke-width="8" stroke-linejoin="round"/>
-  <circle cx="375" cy="134" r="9" fill="#ffb454"/>
-  <text x="474" y="154" fill="#f4f7fb" font-family="monospace" font-size="62" font-weight="700" letter-spacing="5">WIDGET NAME</text>
-  <text x="478" y="214" fill="#9fb5cc" font-family="monospace" font-size="25" letter-spacing="2">REPLACE THE PLACEHOLDER. KEEP THE PROOF.</text>
-  <text x="478" y="278" fill="#5ad4ff" font-family="monospace" font-size="18">QML CONTRACT · TEST LANE · LIVE BUZZ RENDER</text>
+  <rect width="1200" height="400" fill="url(#splitSky)"/>
+  <path d="M0 278 L120 238 L210 254 L340 218 L475 266 L602 230 L726 250 L860 204 L990 240 L1200 190 L1200 400 L0 400 Z" fill="url(#splitGround)"/>
+  <circle cx="1018" cy="88" r="46" fill="#fff4c7"/>
+  <g fill="none" stroke="#63ff73" stroke-width="3" opacity="0.52">
+    <path d="M24 52 H566 M24 78 H566 M24 104 H566 M24 130 H566"/>
+  </g>
+  <g transform="translate(472 210)">
+    <path d="M0 92 H244 L222 146 H24 Z" fill="#6b4b32" stroke="#1a2630" stroke-width="8"/>
+    <path d="M34 90 Q92 -24 184 30 Q220 48 224 90 Z" fill="#fff4c7" stroke="#1a2630" stroke-width="8"/>
+    <path d="M42 88 Q96 8 180 38" fill="none" stroke="#63ff73" stroke-width="8"/>
+    <circle cx="58" cy="148" r="30" fill="#020603" stroke="#b6ffb9" stroke-width="8"/>
+    <circle cx="194" cy="148" r="30" fill="#1a2630" stroke="#d8c06b" stroke-width="8"/>
+    <circle cx="58" cy="148" r="8" fill="#63ff73"/>
+    <circle cx="194" cy="148" r="8" fill="#fff4c7"/>
+  </g>
+  <text x="48" y="188" fill="#b6ffb9" font-family="monospace" font-size="58" font-weight="700">omaTrail</text>
+  <text x="754" y="326" fill="#1a2630" font-family="monospace" font-size="25" font-weight="700" letter-spacing="3">CHOOSE YOUR WAY WEST</text>
 </svg>

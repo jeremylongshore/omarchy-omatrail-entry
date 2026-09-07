@@ -1,10 +1,17 @@
-# QML to Model Contract
+# QML to rules contract
 
-`Panel.qml` may call only top-level ES5 functions that also appear on the node
-`module.exports` surface in `Model.js`. The offline contract test derives every
-`Model.*()` call from QML and verifies that export. It also proves the manifest,
-bar host, and panel share one module ID and every declared entry point resolves
-to a repository file.
+`Overlay.qml`, `JourneyView.qml`, `TrailScene.qml`, and `HuntingBoard.qml` call
+only top-level functions exported from `JourneyRules.js` and `HuntingRules.js`.
+The rules modules contain no QML, wall clock, filesystem, process, or network
+access. Every gameplay change is an explicit action against cloned state.
 
-An instantiated plugin must add captured response fixtures for its external
-data contract. Network calls do not belong in the offline suite.
+`tests/contract.test.js` derives QML calls and checks their Node export surface.
+The same test verifies the manifest, module identity, entry points, launcher,
+and offline runtime claim. `tests/journey.test.js` and `tests/hunting.test.js`
+prove deterministic replay and presentation-profile invariance.
+
+Persistence accepts only schema version 1, caps UTF-8 documents at 64 KiB, and
+validates the complete game state before restoration. Invalid primary saves may
+fall back to one last-good copy. If neither file is safe and valid, the UI
+requires an explicit Start Fresh action before the descriptor-bound helper
+deletes them. QML never opens a save pathname directly.

@@ -1,0 +1,258 @@
+{
+  "fingerprint": "0c70a77496d1b10344c32fbcfbd4947159e05fce6bccd1c7842d26e2f0a42081",
+  "sourceCommit": "42a56b01de9966a4716908cfafe9ebe2cd4f0687",
+  "sourceDirty": true,
+  "sourcePackageSha256": "5278ca3154cb6af53a240336bec5aa4e5fe14faa86760903506aa44f59bfe55d",
+  "remotePackageSha256": "5278ca3154cb6af53a240336bec5aa4e5fe14faa86760903506aa44f59bfe55d",
+  "rig": "intent-ops-buzz/omarchy-rig",
+  "runId": "omatrail-940182",
+  "rawShellLogSha256": "a28aa52641463a63ca8124aaac737319f7e608501daf469593ca771d7c3381db",
+  "fixture": "hunt-save.json",
+  "evidenceBoundary": "isolated real Omarchy shell; live local IPC; active, hidden, reopened, and restarted lifecycle; process and TCP observations",
+  "observedAt": "2026-09-07T05:21:27Z",
+  "audit": {
+    "schemaVersion": 1,
+    "checks": {
+      "hostilePayloadsHandled": true,
+      "openedFocused": true,
+      "huntAdvanced": true,
+      "hiddenTimerFrozen": true,
+      "reopenedPaused": true,
+      "resumedAdvanced": true,
+      "restartRestored": true,
+      "stateHashStable": true,
+      "noPersistentChildAdded": true,
+      "noTcpConnectionAdded": true
+    },
+    "status": {
+      "hostileInputs": [
+        {
+          "input": "null",
+          "status": {
+            "schemaVersion": 1,
+            "opened": true,
+            "focused": true,
+            "viewMode": "hunt",
+            "profile": "green",
+            "journey": {
+              "phase": "hunt",
+              "seed": 1848,
+              "day": 1,
+              "miles": 0,
+              "targetIndex": 1
+            },
+            "hunt": {
+              "phase": "ready",
+              "tick": 0
+            }
+          }
+        },
+        {
+          "input": "7",
+          "status": {
+            "schemaVersion": 1,
+            "opened": true,
+            "focused": true,
+            "viewMode": "hunt",
+            "profile": "green",
+            "journey": {
+              "phase": "hunt",
+              "seed": 1848,
+              "day": 1,
+              "miles": 0,
+              "targetIndex": 1
+            },
+            "hunt": {
+              "phase": "ready",
+              "tick": 0
+            }
+          }
+        },
+        {
+          "input": "[]",
+          "status": {
+            "schemaVersion": 1,
+            "opened": false,
+            "focused": false,
+            "viewMode": "hunt",
+            "profile": "green",
+            "journey": {
+              "phase": "hunt",
+              "seed": 1848,
+              "day": 1,
+              "miles": 0,
+              "targetIndex": 1
+            },
+            "hunt": {
+              "phase": "ready",
+              "tick": 0
+            }
+          }
+        },
+        {
+          "input": "true",
+          "status": {
+            "schemaVersion": 1,
+            "opened": true,
+            "focused": true,
+            "viewMode": "hunt",
+            "profile": "green",
+            "journey": {
+              "phase": "hunt",
+              "seed": 1848,
+              "day": 1,
+              "miles": 0,
+              "targetIndex": 1
+            },
+            "hunt": {
+              "phase": "ready",
+              "tick": 0
+            }
+          }
+        },
+        {
+          "input": "\"text\"",
+          "status": {
+            "schemaVersion": 1,
+            "opened": true,
+            "focused": true,
+            "viewMode": "hunt",
+            "profile": "green",
+            "journey": {
+              "phase": "hunt",
+              "seed": 1848,
+              "day": 1,
+              "miles": 0,
+              "targetIndex": 1
+            },
+            "hunt": {
+              "phase": "ready",
+              "tick": 0
+            }
+          }
+        }
+      ],
+      "opened": {
+        "schemaVersion": 1,
+        "opened": true,
+        "focused": true,
+        "viewMode": "hunt",
+        "profile": "green",
+        "journey": {
+          "phase": "hunt",
+          "seed": 1848,
+          "day": 1,
+          "miles": 0,
+          "targetIndex": 1
+        },
+        "hunt": {
+          "phase": "ready",
+          "tick": 0
+        }
+      },
+      "playing": {
+        "schemaVersion": 1,
+        "opened": true,
+        "focused": true,
+        "viewMode": "hunt",
+        "profile": "green",
+        "journey": {
+          "phase": "hunt",
+          "seed": 1848,
+          "day": 1,
+          "miles": 0,
+          "targetIndex": 1
+        },
+        "hunt": {
+          "phase": "playing",
+          "tick": 10
+        }
+      },
+      "hidden": {
+        "schemaVersion": 1,
+        "opened": false,
+        "focused": false,
+        "viewMode": "hunt",
+        "profile": "green",
+        "journey": {
+          "phase": "hunt",
+          "seed": 1848,
+          "day": 1,
+          "miles": 0,
+          "targetIndex": 1
+        },
+        "hunt": {
+          "phase": "paused",
+          "tick": 10
+        }
+      },
+      "reopened": {
+        "schemaVersion": 1,
+        "opened": true,
+        "focused": true,
+        "viewMode": "hunt",
+        "profile": "green",
+        "journey": {
+          "phase": "hunt",
+          "seed": 1848,
+          "day": 1,
+          "miles": 0,
+          "targetIndex": 1
+        },
+        "hunt": {
+          "phase": "paused",
+          "tick": 10
+        }
+      },
+      "resumed": {
+        "schemaVersion": 1,
+        "opened": true,
+        "focused": true,
+        "viewMode": "hunt",
+        "profile": "green",
+        "journey": {
+          "phase": "hunt",
+          "seed": 1848,
+          "day": 1,
+          "miles": 0,
+          "targetIndex": 1
+        },
+        "hunt": {
+          "phase": "playing",
+          "tick": 20
+        }
+      },
+      "restarted": {
+        "schemaVersion": 1,
+        "opened": false,
+        "focused": false,
+        "viewMode": "hunt",
+        "profile": "green",
+        "journey": {
+          "phase": "hunt",
+          "seed": 1848,
+          "day": 1,
+          "miles": 0,
+          "targetIndex": 1
+        },
+        "hunt": {
+          "phase": "ready",
+          "tick": 0
+        }
+      }
+    },
+    "state": {
+      "beforeSha256": "ab251d2c4ca50fca3d41402dde0059161a3648ce5415c34842278bcc2810eb38",
+      "afterSha256": "ab251d2c4ca50fca3d41402dde0059161a3648ce5415c34842278bcc2810eb38"
+    },
+    "resources": {
+      "rssBeforeKb": 230656,
+      "rssAfterKb": 251352,
+      "childProcessesBefore": 0,
+      "childProcessesAfter": 0,
+      "tcpConnectionsBefore": 0,
+      "tcpConnectionsAfter": 0,
+      "threeOpenHideCyclesMs": 420
+    }
+  }
+}

@@ -1,15 +1,41 @@
-# Requirements Traceability Matrix: Omarchy Widget Template
+# Requirements traceability matrix: omaTrail
 
-| ID | Priority | Requirement | Layers | Evidence |
-|---|---|---|---|---|
-| REQ-TPL-001 | MUST | Model parsing is deterministic, sanitizes external strings, bounds length, and fails closed | L3, L5 | `tests/model.test.js` |
-| REQ-TPL-002 | MUST | Gate output is exactly one schema-valid verdict and all malformed/crashed outputs block | L1, L3 | `tests/gate-runner.test.js` |
-| REQ-TPL-003 | MUST | Vendored gates come only from a clean, complete canonical commit | L1, L3 | `tests/gate-sync.test.js`, `scripts/gates/.lane-manifest` |
-| REQ-TPL-004 | MUST | CI actions are immutable and permissions are least privilege | L1, L2 | `.github/workflows/` |
-| REQ-TPL-005 | MUST | Coverage, mutation, race stability, audit, and shell lint remain enforced | L1, L2, L3 | `package.json`, `tests/TESTING.md`, CI |
-| REQ-TPL-006 | MUST | Buzz validator and qmllint receipts bind the exact clean source package | L6, L7 | `scripts/rig-verify.sh`, `e2e/buzz.sh` |
-| REQ-TPL-007 | MUST | The rendered preview binds the exact clean package, image hash, dimensions, and evidence boundary | L6, L7 | `scripts/rig-render.sh`, `e2e/buzz.sh` |
-| REQ-TPL-008 | MUST | Each generated plugin replaces placeholders and proves its populated primary action | L6, L7 | plugin-specific tests and render extension |
-| REQ-TPL-009 | MUST | Interactive controls expose accessible names/roles and the popup supports close and tab keyboard routing | L5, L7 | `tests/a11y.test.js` |
-| REQ-TPL-010 | MUST | QML calls only exported Model functions and all identity/entry-point contracts resolve | L4, L6 | `tests/contract.test.js`, `contracts/qml-model.md` |
-| REQ-TPL-011 | MUST | Marketplace copy is exact-length, source-grounded, test-linked, and paired with hash-bound visual evidence | L4, L6, L7 | `contracts/marketplace.md`, `tests/contract.test.js`, C43 |
+This matrix uses the canonical acceptance IDs from the Intent Blueprint. `Met`
+means the current local candidate has direct evidence for the full criterion.
+`Partial` means useful evidence exists but part of the criterion remains
+unproven. `Not evaluated` means the required evidence has not been run. This is
+an implementation snapshot, not release approval.
+
+| ID | Status | Current evidence | Remaining limitation |
+| --- | --- | --- | --- |
+| AC-001 | Met | `JourneyRules.js`, `JourneyView.qml`, setup and store unit tests | Human usability review remains outside this criterion. |
+| AC-002 | Met | Deterministic travel, weather, calendar, supplies, wagon, and party tests | None known in the rules boundary. |
+| AC-003 | Met | Two fresh journeys with the same setup, seed, and ordered public-dispatch action sequence produce byte-identical semantic snapshots; save and RNG replay tests add independent coverage | None known in the deterministic engine boundary. |
+| AC-004 | Met | The route graph test proves ordered connectivity, all three acts, six regions, rivers, forts, landmarks, a finish, and continuing event destinations; completion and loss paths are separately exercised | None known in the authored route boundary. |
+| AC-005 | Met | Ending rules, source tests, and retained Green/Color real-shell ending receipts verify survivors, named losses and reasons, duration, difficulty, all resources, waste, score, and seed | Clean-revision regeneration remains part of release evidence. |
+| AC-006 | Partial | Keyboard movement, aim, fire, pause, and return are implemented; right-click movement and left-click aim/fire are source tested | A real pointer and keyboard input-matrix playtest is not proven. |
+| AC-007 | Partial | 10,000 fields cycle through all six regions and prove deterministic eligible placement; graph search proves every animal reachable in 1,000 generated fields | A formal universal proof over the complete seed space has not run. |
+| AC-008 | Partial | Hunt settlement and journey-bridge tests reconcile ammunition, days, energy, carry, waste, regional risk, and injury | A real result-screen capture for every factor is missing. |
+| AC-009 | Partial | Capacity tests distinguish harvested, carried, and wasted pounds and cap added food | Full presentation of all three values needs a runtime scene capture. |
+| AC-010 | Met | `reports/balance/balance-100000.json` records 100,000 public-engine runs: heavy 66.07%, light 55.26%, exploit 4.62%, with zero nonterminal runs | Human PLAY-004 remains separate from this simulation criterion. |
+| AC-011 | Met | River rules, explicit confirmation, explanations, and reduced-motion behavior are source tested and retained in hash-bound Green/Color real-shell river renders | Human PLAY-005 remains separate from this implementation criterion. |
+| AC-012 | Met | Every river choice has deterministic replay and explanation assertions | None known in the pure-rules boundary. |
+| AC-013 | Met | Every event record validates unique ID, eligibility, bounded prose, choices, parallel effects, fictional-composite source, destination, and deterministic resolution | None known in the authored event-record boundary. |
+| AC-014 | Met | Illness and recovery functions are bounded, monotonic under worsening health factors, deterministically tested, and used by event resolution | Balance tuning remains subject to future playtests. |
+| AC-015 | Partial | Save restoration preserves the selected profile; a ten-frame, one-fingerprint matrix retains river, ending, trail, event, and hunt in both modes with receipts and raw logs | Real input operability across the matrix and clean-SHA regeneration remain outstanding. |
+| AC-016 | Partial | Differential rules tests show profile switching preserves semantic state | Hitbox identity across all scenes has not been measured. |
+| AC-017 | Partial | Green Monitor palette tokens, black-field styling, and five retained real-shell scenes are source and runtime verified; both profiles use the same rules and save state | Owner approval and integer-scaling review remain outstanding. |
+| AC-018 | Partial | Reduced motion disables the Green Monitor scanline without changing the 100 ms simulation timer | Other CRT effects and runtime accessibility checks remain unproven. |
+| AC-019 | Partial | Keyboard contracts and non-color labels are source tested | Every critical action and focus path has not been exercised in a real input matrix. |
+| AC-020 | Partial | Manifest validation and `qmllint` pass on a real Buzz Omarchy rig for the dirty development tree | Exact clean-SHA enable, disable, remove, and reinstall evidence is missing. |
+| AC-021 | Partial | Bar launcher, shell IPC target, Escape, and hide contracts exist; live Buzz IPC verifies focused open, unfocused hide, and focused reopen during hunting | Focus return has not been checked on every journey and system path. |
+| AC-022 | Partial | Consequential actions serialize through the descriptor-bound state helper; a live Buzz restart restored the exact persisted hunt fixture and identical journey fields with an unchanged state SHA-256 | The retained restart run begins from a seeded persisted state rather than performing and saving a new consequential journey action in the same run. |
+| AC-023 | Partial | Missing, malformed, future, oversized, FIFO, symlink, directory, and same-UID swap cases are tested with explicit recovery | Read-only and full real-shell failure paths remain unproven. |
+| AC-024 | Partial | Pause, abandon confirmation, new expedition, and explicit save deletion exist | Full runtime restart and deletion scenarios remain unproven. |
+| AC-025 | Partial | Offline static gates, local state-path contracts, dependency audit, and hostile-path tests pass; a targeted live hunting lifecycle added no persistent child process or Quickshell TCP connection | A complete expedition runtime observation and write-set capture have not run. |
+| AC-026 | Partial | QML and SVG art are original project files and third-party runtime assets are not bundled | Formal provenance and human review disposition are missing. |
+| AC-027 | Partial | Story text is labeled fictional composite rather than historical fact | Human affected-group and historical review disposition is missing. |
+| AC-028 | Partial | Live Buzz status proves the hunting timer advances while active, freezes while hidden, resumes on request, and resets safely after shell restart; the receipt records whole-shell RSS and three IPC open-hide cycles | Frame pacing, device-to-render input latency, long-soak memory, and whole-shell idle CPU are not measured. |
+
+The canonical criterion wording, authorities, and waiver rules remain in the
+Intent Blueprint linked from `README.md`.

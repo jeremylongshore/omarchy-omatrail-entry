@@ -1,0 +1,217 @@
+#!/usr/bin/perl
+# Descriptor-bound, bounded save lifecycle for omaTrail.
+use strict;
+use warnings;
+
+use Fcntl qw(:DEFAULT :flock :mode);
+use Errno qw(ENOENT);
+use File::Spec;
+use IO::Handle;
+use JSON::PP qw(decode_json);
+
+umask 0077;
+my $MAX_BYTES = 64 * 1024;
+my $FINAL = 'journey.json';
+my $BACKUP = 'journey.last-good.json';
+my $LOCK = '.journey.lock';
+
+sub open_state_chain {
+    my $home = $ENV{HOME} // '';
+    my $base = length($ENV{XDG_STATE_HOME} // '')
+        ? $ENV{XDG_STATE_HOME}
+        : File::Spec->catdir($home, '.local', 'state');
+    die "state root must be absolute\n"
+        unless File::Spec->file_name_is_absolute($base);
+
+    my $full = File::Spec->catdir($base, 'omarchy', 'omatrail');
+    my @parts = grep { length($_) } File::Spec->splitdir($full);
+    die "unsafe state path\n" if grep { $_ eq '.' || $_ eq '..' } @parts;
+
+    my $current;
+    sysopen($current, '/', O_RDONLY | O_DIRECTORY | O_NOFOLLOW)
+        or die "cannot pin filesystem root\n";
+    my @chain = ($current);
+    for my $part (@parts) {
+        chdir($current) or die "cannot traverse state path\n";
+        my $next;
+        unless (sysopen($next, $part, O_RDONLY | O_DIRECTORY | O_NOFOLLOW)) {
+            mkdir($part, 0700);
+            sysopen($next, $part, O_RDONLY | O_DIRECTORY | O_NOFOLLOW)
+                or die "unsafe state path component\n";
+        }
+        my @st = stat($next);
+        die "unsafe state path component\n" unless @st && S_ISDIR($st[2]);
+        push @chain, $next;
+        $current = $next;
+    }
+
+    my @state_dir = stat($current);
+    die "unsafe state directory owner\n"
+        unless @state_dir && S_ISDIR($state_dir[2]) && $state_dir[4] == $<;
+    chmod(0700, $current) or die "cannot privatize state directory\n";
+    chdir($current) or die "cannot retain state directory\n";
+    return (\@chain, $current);
+}
+
+sub same_object {
+    my ($left, $right) = @_;
+    return @$left && @$right
+        && $left->[0] == $right->[0]
+        && $left->[1] == $right->[1]
+        && S_ISREG($left->[2])
+        && S_ISREG($right->[2]);
+}
+
+sub lock_state {
+    my $fh;
+    sysopen($fh, $LOCK, O_RDWR | O_CREAT | O_NONBLOCK | O_NOFOLLOW, 0600)
+        or die "cannot open save lock\n";
+    my @opened = stat($fh);
+    die "unsafe save lock\n"
+        unless @opened && S_ISREG($opened[2]) && $opened[4] == $<;
+    chmod(0600, $fh) or die "cannot privatize save lock\n";
+    flock($fh, LOCK_EX) or die "cannot lock save state\n";
+    my @named = lstat($LOCK);
+    die "save lock identity changed\n" unless same_object(\@opened, \@named);
+    return $fh;
+}
+
+sub read_named {
+    my ($name) = @_;
+    my $fh;
+    unless (sysopen($fh, $name, O_RDONLY | O_NONBLOCK | O_NOFOLLOW)) {
+        return (undef, $! == ENOENT ? 'missing' : 'unsafe');
+    }
+    my @opened = stat($fh);
+    return (undef, 'unsafe')
+        unless @opened && S_ISREG($opened[2]) && $opened[4] == $<
+            && $opened[7] <= $MAX_BYTES;
+
+    my $raw = '';
+    while (length($raw) <= $MAX_BYTES) {
+        my $read = sysread($fh, my $chunk, 4096);
+        return (undef, 'read-error') unless defined($read);
+        last if $read == 0;
+        $raw .= $chunk;
+    }
+    return (undef, 'oversized') if length($raw) > $MAX_BYTES;
+    my @named = lstat($name);
+    return (undef, 'replaced') unless same_object(\@opened, \@named);
+    return ($raw, 'ok');
+}
+
+sub read_input {
+    my $raw = '';
+    while (length($raw) <= $MAX_BYTES) {
+        my $read = sysread(STDIN, my $chunk, 4096);
+        die "save input read failed\n" unless defined($read);
+        last if $read == 0;
+        $raw .= $chunk;
+    }
+    die "save input exceeded bound\n" if length($raw) > $MAX_BYTES;
+    my $value = eval { decode_json($raw) };
+    die "save input is not a JSON object\n" unless ref($value) eq 'HASH';
+    return $raw;
+}
+
+sub open_temp {
+    my ($prefix) = @_;
+    for (1 .. 64) {
+        my $name = sprintf('.%s.%d.%08x%08x', $prefix, $$,
+            int(rand(0xffffffff)), int(rand(0xffffffff)));
+        my $fh;
+        if (sysopen($fh, $name,
+            O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW, 0600)) {
+            chmod(0600, $fh) or die "cannot privatize save temp\n";
+            return ($name, $fh);
+        }
+    }
+    die "cannot create save temp\n";
+}
+
+sub publish {
+    my ($payload, $target, $prefix, $dir_fh) = @_;
+    my ($temp, $fh) = open_temp($prefix);
+    my @opened = stat($fh);
+    my $published = 0;
+    my $ok = eval {
+        my $offset = 0;
+        while ($offset < length($payload)) {
+            my $written = syswrite($fh, substr($payload, $offset));
+            die "save write failed\n"
+                unless defined($written) && $written > 0;
+            $offset += $written;
+        }
+        $fh->sync or die "save fsync failed\n";
+
+        my @named = lstat($temp);
+        die "save temp identity changed\n"
+            unless same_object(\@opened, \@named);
+        rename($temp, $target) or die "save replace failed\n";
+        $published = 1;
+        my @final = lstat($target);
+        die "save publication identity changed\n"
+            unless same_object(\@opened, \@final);
+        $dir_fh->sync or die "save directory fsync failed\n";
+        close($fh) or die "save close failed\n";
+        $fh = undef;
+        1;
+    };
+    return if $ok;
+    my $error = $@ || "save publication failed\n";
+    close($fh) if $fh;
+    unlink($temp) unless $published;
+    die $error;
+}
+
+sub forget_named {
+    my ($name) = @_;
+    my @before = lstat($name);
+    return 1 unless @before;
+    return 0 unless $before[4] == $<;
+    if (!S_ISREG($before[2])) {
+        return 0 if S_ISDIR($before[2]);
+        return unlink($name) && !lstat($name) ? 1 : 0;
+    }
+    my $fh;
+    return 0 unless sysopen($fh, $name, O_RDONLY | O_NONBLOCK | O_NOFOLLOW);
+    my @opened = stat($fh);
+    my @named = lstat($name);
+    my $safe = @opened && $opened[4] == $< && same_object(\@opened, \@named);
+    my $removed = $safe && unlink($name);
+    close($fh);
+    return $removed && !lstat($name) ? 1 : 0;
+}
+
+my $op = $ARGV[0] // '';
+die "usage: omatrail-state --read-primary|--read-backup|--write|--delete\n"
+    unless @ARGV == 1 && $op =~ /\A--(?:read-primary|read-backup|write|delete)\z/;
+
+my ($chain, $dir_fh) = open_state_chain();
+my $lock_fh = lock_state();
+
+if ($op eq '--read-primary' || $op eq '--read-backup') {
+    my $name = $op eq '--read-primary' ? $FINAL : $BACKUP;
+    my ($raw, $state) = read_named($name);
+    exit 3 if $state eq 'missing';
+    exit 4 unless $state eq 'ok';
+    print $raw;
+    exit 0;
+}
+
+if ($op eq '--delete') {
+    my $primary_removed = forget_named($FINAL);
+    my $backup_removed = forget_named($BACKUP);
+    die "unsafe save entry could not be deleted\n"
+        unless $primary_removed && $backup_removed;
+    $dir_fh->sync or die "save directory fsync failed\n";
+    exit 0;
+}
+
+my $incoming = read_input();
+my ($current, $current_state) = read_named($FINAL);
+die "existing primary save is unsafe\n"
+    unless $current_state eq 'ok' || $current_state eq 'missing';
+publish($current, $BACKUP, 'journey-backup', $dir_fh)
+    if $current_state eq 'ok';
+publish($incoming, $FINAL, 'journey-primary', $dir_fh);

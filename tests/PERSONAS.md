@@ -1,16 +1,28 @@
-# Test Personas
+# Test personas
 
-## Plugin author
+## First-time traveler
 
-Creates a repository from the template, replaces every placeholder, adds real
-contract fixtures, and gets actionable local failures before a public push.
+Wants recognizable trail play, clear store guidance, forgiving controls, and an
+ending without reading implementation documentation.
 
-## Omarchy user
+## Returning classic player
 
-Installs on stock Omarchy, sees a bounded readable pill and panel, can operate
-the interface by pointer and keyboard, and never needs the author's dev runtime.
+Chooses Green Monitor, expects a green-and-black presentation, hunts with the
+keyboard, and wants rivers, supplies, illness, repairs, and party losses to
+matter.
 
-## Marketplace maintainer
+## Color player
 
-Receives an exact-SHA submission with deterministic CI, an honest Buzz evidence
-boundary, and a screenshot that shows populated value instead of an empty shell.
+Chooses Color Deluxe and receives the same decisions, timing, difficulty, save,
+and outcomes with only the graphics changed.
+
+## Keyboard or reduced-motion player
+
+Can operate the primary journey and every hunt action without a pointer, can
+enable aim assist, and does not receive altered simulation outcomes from the
+reduced-motion preference.
+
+## Omarchy maintainer
+
+Receives a stock-runtime plugin with current manifest contracts, deterministic
+tests, honest privacy claims, and clean hash-bound validator and render proof.

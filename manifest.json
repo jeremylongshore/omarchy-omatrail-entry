@@ -1,24 +1,68 @@
 {
   "schemaVersion": 1,
-  "id": "io.github.YOURNAME.widget-name",
-  "name": "Widget Name",
+  "id": "io.github.jeremylongshore.omatrail",
+  "name": "omaTrail",
   "version": "0.1.0",
-  "author": "Your Name",
+  "author": "Jeremy Longshore",
   "license": "MIT",
-  "description": "Build an Omarchy bar widget from a production-ready starting point instead of an empty folder. This template pairs the Quickshell host and panel contracts with accessible controls. It adds bounded plain-text rendering, a JavaScript model, offline unit and mutation tests, canonical security gates, Buzz validation, and shell screenshot evidence. Replace every Widget Name placeholder, author a product-specific SVG banner, seed your live preview, and ship with exact-run proof instead of assumptions.",
+  "description": "omaTrail opens a frontier survival game from an Omarchy bar button onto a fullscreen trail map for keyboard and mouse. Name your party, buy supplies, set pace and rations, cross rivers, survive illness, trade at forts, and hunt wildlife. Switch between green-and-black Green Monitor graphics and Color Deluxe pixel art without changing rules or saves. It runs offline with no network, telemetry, account, daemon, or elevated access. It writes one bounded save and keeps the prior good save as backup.",
   "kinds": [
+    "overlay",
     "bar-widget"
   ],
+  "keepLoaded": true,
   "entryPoints": {
+    "overlay": "Overlay.qml",
     "barWidget": "BarWidget.qml"
   },
   "barWidget": {
-    "displayName": "Widget Name",
-    "description": "Build an Omarchy bar widget from a production-ready starting point instead of an empty folder. This template pairs the Quickshell host and panel contracts with accessible controls. It adds bounded plain-text rendering, a JavaScript model, offline unit and mutation tests, canonical security gates, Buzz validation, and shell screenshot evidence. Replace every Widget Name placeholder, author a product-specific SVG banner, seed your live preview, and ship with exact-run proof instead of assumptions.",
-    "category": "Info",
+    "displayName": "omaTrail",
+    "description": "omaTrail opens a frontier survival game from an Omarchy bar button onto a fullscreen trail map for keyboard and mouse. Name your party, buy supplies, set pace and rations, cross rivers, survive illness, trade at forts, and hunt wildlife. Switch between green-and-black Green Monitor graphics and Color Deluxe pixel art without changing rules or saves. It runs offline with no network, telemetry, account, daemon, or elevated access. It writes one bounded save and keeps the prior good save as backup.",
+    "category": "Plugin",
+    "defaultSection": "right",
     "aliases": [
-      "widget-name"
+      "omatrail",
+      "trail-game",
+      "frontier-game"
     ],
-    "allowMultiple": false
+    "allowMultiple": false,
+    "defaults": {
+      "displayMode": "Green Monitor",
+      "difficulty": "Normal",
+      "reducedMotion": false,
+      "aimAssist": false
+    },
+    "schema": [
+      {
+        "key": "displayMode",
+        "type": "enum",
+        "label": "Display mode",
+        "options": ["Green Monitor", "Color Deluxe"],
+        "defaultValue": "Green Monitor",
+        "description": "Choose green-and-black phosphor graphics or the original limited-color pixel palette. Gameplay and saves are identical."
+      },
+      {
+        "key": "difficulty",
+        "type": "enum",
+        "label": "Difficulty",
+        "options": ["Easy", "Normal", "Hard"],
+        "defaultValue": "Normal",
+        "description": "Adjust travel pressure, river risk, hunting time, and animal movement speed."
+      },
+      {
+        "key": "reducedMotion",
+        "type": "boolean",
+        "label": "Reduced motion",
+        "defaultValue": false,
+        "description": "Reduce presentation animation without changing simulation timing or game outcomes."
+      },
+      {
+        "key": "aimAssist",
+        "type": "boolean",
+        "label": "Hunting aim assist",
+        "defaultValue": false,
+        "description": "Widen hunting targets, slow animal movement, and extend the hunting timer."
+      }
+    ]
   }
 }

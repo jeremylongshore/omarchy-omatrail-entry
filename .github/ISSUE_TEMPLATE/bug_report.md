@@ -17,8 +17,12 @@ omarchy --version
 Quickshell writes to its log; the lines mentioning this plugin are the useful
 ones.
 
-**Is it reproducible from a clean state?**
+**Replay seed, game phase, and display profile**
 
-State lives under `~/.local/state/omarchy/`; deleting this plugin's directory
-there is always safe and the next poll rebuilds it. Say whether that changed
-anything.
+These make deterministic gameplay defects reproducible.
+
+**Is it reproducible from a clean save?**
+
+State lives under `$XDG_STATE_HOME/omarchy/omatrail/`, or under
+`~/.local/state/omarchy/omatrail/` when that variable is unset. Deleting this
+directory resets the game. Say whether that changed anything.

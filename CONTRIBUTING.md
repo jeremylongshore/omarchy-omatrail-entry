@@ -1,58 +1,45 @@
 # Contributing
 
-Issues and pull requests are welcome. This is a small plugin, so the bar is
-practical rather than bureaucratic.
+Contributions to omaTrail are welcome. Keep changes small, evidence-backed, and
+compatible with a stock Omarchy installation.
 
-## Before you open a pull request
-
-```bash
-npm test                          # offline suite, never touches the network
-scripts/run-plugin-gates.sh .     # the vendored gate lane
-```
-
-Both must pass. The gate lane is vendored into this repository on purpose:
-enforcement travels with the code, so it runs on your machine and in CI rather
-than living in a tool only the maintainer has.
-
-Do not hand-edit anything under `scripts/gates/`. It is synced from canonical by
-`scripts/sync-gate-lane.sh` and a manifest check refuses an edited copy.
-
-## If you change anything that renders
-
-`omarchy-plugin-validate` and `qmllint` are static. Neither loads the plugin, so
-neither can see a QML contract error, a helper missing from the QML export
-surface, or a shell string the engine rejects. If you have rig access:
+## Before opening a pull request
 
 ```bash
-scripts/rig-verify.sh    # validate + qmllint against a fingerprint of the tree
-scripts/rig-render.sh . preview.png # direct full-frame screenshot + render receipt
-scripts/approve-preview.sh          # approve value, fit, and plugin-specific identity
+npm ci
+npm test
+npm run test:race
+npm run test:mutation
+npm run audit
+scripts/run-plugin-gates.sh .
 ```
 
-Both receipts record the source commit, whether shipped source was dirty, and
-the local and Buzz package hashes. `.render-proof.json` also records the exact
-preview hash and dimensions. A plugin-specific integration must extend the
-render journey with deterministic fixture data and assert its primary action;
-the generic template can only prove load, toggle, and render.
+Use Conventional Commits such as `feat:`, `fix:`, `test:`, `docs:`, and `ci:`.
+Do not hand-edit `scripts/gates/`; the lane is synced from its canonical source.
 
-If you do not, say so in the pull request. An unverified change that admits it
-is fine; one that implies verification it did not do is not.
+## Gameplay changes
 
-## House rules that will otherwise surprise you
+- Keep all state transitions deterministic and driven by explicit actions.
+- Preserve semantic parity between Green Monitor and Color Deluxe.
+- Add a seed-based regression for balance, conservation, or outcome changes.
+- Make hunting useful but optional for a carefully supplied expedition.
+- Keep fictional route text clearly identified as fictional composite content.
+- Never add runtime network access, telemetry, or a non-stock interpreter.
 
-- **No runtime dependency.** A stock Omarchy install has no node, python or ruby
-  on the graphical session PATH, so a plugin that shells out to one installs
-  cleanly and then silently never populates. Quickshell plus `curl` is the
-  stack; `jq` is fine because Omarchy ships it.
-- **Untrusted text is bounded.** Anything from a network response or another
-  program renders as `Text.PlainText`, with a width constraint *and* an `elide`
-  or `wrapMode`. Either alone is a no-op.
-- **Secrets never reach a process argument.** `/proc/<pid>/cmdline` is
-  world-readable. Use stdin.
-- **No em or en dashes in shipped prose.** A gate enforces it.
+## Visible changes
 
-## Commits
+Run the real-shell checks when QML, layout, controls, or graphics change:
 
-Conventional commits (`feat:`, `fix:`, `docs:`, `ci:`). The changelog is
-generated from them by `scripts/gen-changelog.sh`, so a clear subject line ends
-up in a released document.
+```bash
+scripts/rig-verify.sh .
+scripts/rig-render.sh . preview.png
+scripts/approve-preview.sh
+```
+
+The render receipt must bind a clean commit. A static validator or mockup is not
+evidence that the plugin loaded and rendered correctly.
+
+## Tracking
+
+Project work is tracked in the parent `000-projects` Beads database. Do not add
+markdown TODO lists or ad hoc memory files to this repository.

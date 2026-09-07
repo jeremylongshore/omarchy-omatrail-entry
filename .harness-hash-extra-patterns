@@ -9,6 +9,9 @@ scripts/sync-gate-lane.sh
 scripts/check-lane-freshness.sh
 scripts/rig-verify.sh
 scripts/rig-render.sh
+scripts/rig-render-matrix.sh
+scripts/rig-runtime-audit.sh
+scripts/balance-sim.js
 scripts/gates/.lane-manifest
 scripts/gates/*.sh
 scripts/gates/lib/preamble.sh
@@ -20,3 +23,9 @@ tests/PERSONAS.md
 tests/JOURNEYS.md
 contracts/*.md
 stryker.config.json
+JourneyRules.js
+HuntingRules.js
+reports/balance/balance-100000.json
+reports/mutation/mutation.json
+evidence/render-matrix/*
+evidence/runtime/*

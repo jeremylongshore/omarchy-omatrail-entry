@@ -1,4 +1,10 @@
 node_modules/
 coverage/
-reports/
+reports/*
+!reports/balance/
+reports/balance/*
+!reports/balance/balance-100000.json
+!reports/mutation/
+reports/mutation/*
+!reports/mutation/mutation.json
 .stryker-tmp/

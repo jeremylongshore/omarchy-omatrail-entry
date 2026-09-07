@@ -1,3 +1,8 @@
-# Omarchy plugin template: QML frontend plus an offline JavaScript data layer.
+# omaTrail: QML frontend plus an offline deterministic JavaScript game engine.
 classify_pins:
   - frontend
+# The built-in a11y detector recognizes web-only axe/pa11y dependencies. This
+# plugin is native QML; its accessibility contracts run in tests/a11y.test.js
+# and real-shell validation instead.
+disable_gates:
+  - audit-harness:ci:a11y

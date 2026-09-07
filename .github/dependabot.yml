@@ -1,8 +1,5 @@
-# Only GitHub Actions. This plugin ships no package dependencies at all: it runs
-# on Quickshell plus the curl the box already has, and node appears solely as a
-# devDependency-free test runner. The one supply-chain surface that DOES exist is
-# the actions in .github/workflows, which are SHA-pinned, so this keeps those
-# pins current instead of letting them rot at a commit nobody revisits.
+# Runtime remains dependency-free. Dependabot maintains the SHA-pinned Actions
+# and the Node-only development verification stack.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -11,5 +8,13 @@ updates:
       interval: monthly
     commit-message:
       prefix: "ci"
+    labels:
+      - dependencies
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "build"
     labels:
       - dependencies
