@@ -95,7 +95,16 @@ sleep 18
 [[ -d "/proc/$QS_PID" ]] || { tail -80 "$QS_LOG"; exit 1; }
 
 plugin_row() {
-  omarchy-shell shell listPlugins | jq -c --arg id "$ID" '[.[] | select(.id == $id)]'
+  local plugins=""
+  for _ in $(seq 1 15); do
+    if plugins=$(omarchy-shell shell listPlugins 2>/dev/null); then
+      printf '%s\n' "$plugins" | jq -c --arg id "$ID" '[.[] | select(.id == $id)]'
+      return
+    fi
+    sleep 1
+  done
+  echo "lifecycle: shell plugin catalog did not recover after rescan" >&2
+  return 1
 }
 
 echo "lifecycle:add"
