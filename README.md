@@ -153,6 +153,7 @@ The real-shell lane uses the Buzz Omarchy rig:
 
 ```bash
 scripts/rig-verify.sh .
+scripts/rig-install-lifecycle.sh .
 scripts/rig-render.sh . preview.png
 scripts/rig-render-matrix.sh . evidence/render-matrix
 scripts/rig-runtime-audit.sh .
@@ -164,7 +165,8 @@ save handling, route and event outcomes, display invariance, accessibility, and
 360 journey-policy simulations across both rules profiles. The balance lane runs 100,000 fixed seeds
 through 480 rules-profile, policy, difficulty, occupation, and departure-month cells using the real
 journey and hunting engines. The Buzz lane validates, lints,
-loads, toggles, and captures omaTrail inside a real Omarchy shell.
+loads, toggles, installs, removes, reinstalls, and captures omaTrail inside a
+real Omarchy shell.
 
 The retained [render matrix](evidence/render-matrix/README.md) covers hunting,
 rivers, events, trail travel, and endings in both rules profiles and both visual modes. The runtime lane
