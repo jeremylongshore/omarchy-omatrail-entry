@@ -181,7 +181,7 @@ The release lane is intentionally layered:
 | Do all combinations render? | 20 frames: 5 critical scenes by 2 rules profiles by 2 visual profiles |
 | Does the listing match the product? | Claim ledger, exact 500-character description, screenshot receipts, and human visual approval |
 
-The five retained scenes are setup/trail, event, river, graphical hunt, and
+The five retained scenes are trail travel, event, river, graphical hunt, and
 ending. Each frame has a raw shell log and a hash-bound receipt. Release evidence
 must come from a clean exact revision; dirty development captures are useful for
 debugging but cannot qualify a marketplace submission.
