@@ -63,18 +63,15 @@ recorded zero uncovered mutants, timeouts, or errors, and scored 93.15 percent
 against the 90 percent break threshold. The report is Git-trackable and
 hash-pinned together with the mutation configuration and test corpus.
 
-The current candidate render ledger is `evidence/render-matrix/matrix.json`.
-It contains twenty 1280 by 720 frames over one source fingerprint: hunt, river,
-event, trail, and ending in both rules profiles and in Green Monitor and Color Deluxe. Every PNG and raw
-shell log reconciles to its receipt. These artifacts come from a dirty
-development tree; regenerate them from the exact clean target SHA before
-release approval.
+The current render ledger is `evidence/render-matrix/matrix.json`. It contains
+twenty 1280 by 720 frames over one clean source fingerprint: hunt, river,
+event, trail, and ending in both rules profiles and in Green Monitor and Color
+Deluxe. Every PNG and raw shell log reconciles to its receipt.
 
 The current lifecycle receipt is
-`evidence/runtime/runtime-audit.json`. In its dirty-tree Buzz run, the hunt
+`evidence/runtime/runtime-audit.json`. In its clean-source Buzz run, the hunt
 advanced from tick 0 to 10, hid and remained frozen at tick 11, resumed to tick
 21, and restored the same journey after a shell restart. The state SHA-256 was
 unchanged across restart, no persistent child or TCP connection was added, and
 the receipt records three open-hide cycles. RSS and timing are observations of
-the whole shell, not an attribution to this plugin. Regenerate the receipt on
-the clean release revision.
+the whole shell, not an attribution to this plugin.

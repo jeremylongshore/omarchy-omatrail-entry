@@ -1,15 +1,15 @@
 {
-  "fingerprint": "751a97fb139d0e0f958075e6733c980725ef1dc61fa7d15706f18f90b1cc4812",
-  "sourceCommit": "ac556c96922c047cdb0dd52dfe33e39b1fc855f9",
+  "fingerprint": "c06d266f8f44b1b9770334502a1ca4041a99b9c568d7ea9b0d958c5a77f8257e",
+  "sourceCommit": "636e71336a9eb0491af7fe3738dc43eaf4690875",
   "sourceDirty": false,
-  "sourcePackageSha256": "879b1888fd347bb548ff6c404a9a7ba3ed8e336c709d7ae9e8053d6dcb9e4f8d",
-  "remotePackageSha256": "879b1888fd347bb548ff6c404a9a7ba3ed8e336c709d7ae9e8053d6dcb9e4f8d",
+  "sourcePackageSha256": "9e70ed4794cf4fc94eaed94623dbd8e3d9333c8bdc3f2c79bc30ed33206bd964",
+  "remotePackageSha256": "9e70ed4794cf4fc94eaed94623dbd8e3d9333c8bdc3f2c79bc30ed33206bd964",
   "rig": "intent-ops-buzz/omarchy-rig",
-  "runId": "omatrail-2083687",
-  "rawShellLogSha256": "42a4c814f5d125aa9c6d685ab4f4b77642aa57ac1ff818ae1e695b48eba89c3f",
+  "runId": "omatrail-2210768",
+  "rawShellLogSha256": "be18400f1acb664ac58618e5f5da509cc2213cb51479ab1ad1364c58b54025fe",
   "fixture": "hunt-save.json",
   "evidenceBoundary": "isolated real Omarchy shell; live local IPC; active, hidden, reopened, and restarted lifecycle; process and TCP observations",
-  "observedAt": "2026-09-07T16:55:15Z",
+  "observedAt": "2026-09-07T18:12:59Z",
   "audit": {
     "schemaVersion": 1,
     "checks": {
@@ -257,13 +257,13 @@
       "afterSha256": "ac4603f91a936581da5b498bf3d9df87bd599da06f8cfaa3273dc7618a713ac7"
     },
     "resources": {
-      "rssBeforeKb": 232680,
-      "rssAfterKb": 248504,
+      "rssBeforeKb": 233140,
+      "rssAfterKb": 255692,
       "childProcessesBefore": 0,
       "childProcessesAfter": 0,
       "tcpConnectionsBefore": 0,
       "tcpConnectionsAfter": 0,
-      "threeOpenHideCyclesMs": 454
+      "threeOpenHideCyclesMs": 480
     }
   }
 }

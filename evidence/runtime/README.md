@@ -13,6 +13,7 @@ and other free-form user data. The receipt is bound to the shipped runtime
 fingerprint, source commit, dirty-state flag, package hashes, rig, run ID, and
 raw shell-log hash.
 
-This is dirty development-tree evidence. It does not prove a complete journey,
-frame pacing, device-to-render latency, long-soak memory behavior, or clean-SHA
-release readiness.
+The retained receipt was produced from clean source commit
+`636e71336a9eb0491af7fe3738dc43eaf4690875`; it records `sourceDirty: false`
+and matching local and remote package hashes. It does not prove a complete
+journey, frame pacing, device-to-render latency, or long-soak memory behavior.
