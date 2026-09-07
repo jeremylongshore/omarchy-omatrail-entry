@@ -58,6 +58,7 @@ cleanup() {
   [[ ! -d "$ROOT" ]] || find "$ROOT" -depth -delete 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
+trap 'status=$?; echo "lifecycle:error line=$LINENO status=$status command=$BASH_COMMAND" >&2; exit "$status"' ERR
 
 mkdir -p "$RUNTIME" "$ROOT/.config/omarchy/plugins"
 chmod 700 "$ROOT" "$RUNTIME" "$ROOT/.config" "$ROOT/.config/omarchy" "$ROOT/.config/omarchy/plugins"
@@ -138,6 +139,7 @@ echo "lifecycle:remove"
 omarchy-plugin-remove "$ID" --yes
 [[ ! -e "$TARGET" ]]
 REMOVED_COUNT=$(plugin_row | jq 'length')
+echo "lifecycle:removed-count=$REMOVED_COUNT"
 [[ "$REMOVED_COUNT" == 0 ]]
 
 echo "lifecycle:reinstall"
