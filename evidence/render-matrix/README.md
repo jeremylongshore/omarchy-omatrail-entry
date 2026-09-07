@@ -20,10 +20,13 @@ fingerprint changes during the matrix run. Reproduce the complete set with:
 scripts/rig-render-matrix.sh . evidence/render-matrix
 ```
 
-The current artifacts were produced from a dirty development tree and are
-candidate evidence, not clean-revision release evidence or human visual
-approval. A release run must regenerate the matrix from the exact clean target
-SHA and complete the required human input and visual review:
+The retained artifacts were produced from clean source commit
+`ae86fc21848debc6a4ab33d8b951b8a2cc460d83`. All twenty receipts record
+`sourceDirty: false`, one source fingerprint, and matching local and remote
+package hashes. Human approval of the separate marketplace preview remains
+hash-bound in `.render-proof.json`; it is not inferred from this matrix.
+
+Regenerate the matrix from a clean target revision with:
 
 ```bash
 OMATRAIL_MATRIX_REQUIRE_CLEAN=true \

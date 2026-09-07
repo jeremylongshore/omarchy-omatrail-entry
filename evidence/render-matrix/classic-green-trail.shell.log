@@ -1,6 +1,6 @@
 [32m  INFO[0m: Launching config: "/root/omarchy/shell/shell.qml"
 [32m  INFO[0m: Shell ID: "25ddb9a40217a80c053fb1f820da0a31" Path ID "25ddb9a40217a80c053fb1f820da0a31"
-[32m  INFO[0m: Saving logs to "/tmp/rigrender-runtime-omatrail-1966511/quickshell/by-id/ax12hf40lt/log.qslog"
+[32m  INFO[0m: Saving logs to "/tmp/rigrender-runtime-omatrail-2204327/quickshell/by-id/40s2z9a0lt/log.qslog"
 libEGL warning: failed to get driver name for fd -1
 
 libEGL warning: MESA-LOADER: failed to retrieve device information
@@ -9,14 +9,14 @@ libEGL warning: failed to get driver name for fd -1
 
 MESA: error: ZINK: vkCreateInstance failed (VK_ERROR_INCOMPATIBLE_DRIVER)
 libEGL warning: egl: failed to create dri2 screen
-[34m DEBUG[97m qml[0m: omarchy-shell paths omarchyPath=/root/omarchy shellDir=/root/omarchy/shell firstPartyPluginsDir=/root/omarchy/shell/plugins defaultsPath=/root/omarchy/config/omarchy/shell.json userConfigPath=/tmp/rigrender-home-omatrail-1966511/.config/omarchy/shell.json
+[34m DEBUG[97m qml[0m: omarchy-shell paths omarchyPath=/root/omarchy shellDir=/root/omarchy/shell firstPartyPluginsDir=/root/omarchy/shell/plugins defaultsPath=/root/omarchy/config/omarchy/shell.json userConfigPath=/tmp/rigrender-home-omatrail-2204327/.config/omarchy/shell.json
 [32m  INFO[0m: Configuration Loaded
 [33m  WARN[97m quickshell.service.upower[0m: Could not connect to DBus. UPower service will not work.
 [33m  WARN[0m: $HYPRLAND_INSTANCE_SIGNATURE is unset. Cannot connect to hyprland.
-[34m DEBUG[97m qml[0m: omarchy idle 2026-09-07T15:59:42.844Z service-ready
-[E] pw.loop [loop.c:70 pw_loop_new()] 0x79e7a4b12280: can't make support.system handle: No such file or directory
+[34m DEBUG[97m qml[0m: omarchy idle 2026-09-07T18:06:00.749Z service-ready
+[E] pw.loop [loop.c:70 pw_loop_new()] 0x75be0054a160: can't make support.system handle: No such file or directory
 [31m ERROR[97m quickshell.service.pipewire.loop[0m: Failed to create pipewire event loop.
-[33m  WARN[97m quickshell.service.polkit.listener[0m: failed to create subject for listener: No session for pid 95806
+[33m  WARN[97m quickshell.service.polkit.listener[0m: failed to create subject for listener: No session for pid 129604
 [33m  WARN[97m quickshell.service.polkit[0m: failed to register listener on path "/org/omarchy/PolkitAgent"
-[34m DEBUG[97m qml[0m: omarchy idle 2026-09-07T15:59:42.919Z stay-awake: disabled state-file
-[34m DEBUG[97m qml[0m: omarchy idle 2026-09-07T15:59:42.986Z idle-monitor: active
+[34m DEBUG[97m qml[0m: omarchy idle 2026-09-07T18:06:00.850Z stay-awake: disabled state-file
+[34m DEBUG[97m qml[0m: omarchy idle 2026-09-07T18:06:00.927Z idle-monitor: active
