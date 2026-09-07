@@ -109,6 +109,21 @@ plugin_row() {
   return 1
 }
 
+wait_plugin_count() {
+  local expected="$1"
+  local count=""
+  for _ in $(seq 1 15); do
+    count=$(plugin_row | jq 'length')
+    if [[ "$count" == "$expected" ]]; then
+      printf '%s\n' "$count"
+      return
+    fi
+    sleep 1
+  done
+  echo "lifecycle: expected $expected catalog entries, found $count" >&2
+  return 1
+}
+
 echo "lifecycle:add"
 omarchy-plugin-add "$URL" --enable --yes
 [[ -d "$TARGET/.git" ]]
@@ -138,7 +153,7 @@ REENABLED_COUNT=$(plugin_row | jq '[.[] | select(.enabled == true)] | length')
 echo "lifecycle:remove"
 omarchy-plugin-remove "$ID" --yes
 [[ ! -e "$TARGET" ]]
-REMOVED_COUNT=$(plugin_row | jq 'length')
+REMOVED_COUNT=$(wait_plugin_count 0)
 echo "lifecycle:removed-count=$REMOVED_COUNT"
 [[ "$REMOVED_COUNT" == 0 ]]
 
@@ -152,7 +167,7 @@ REINSTALLED_COUNT=$(plugin_row | jq '[.[] | select(.enabled == true)] | length')
 echo "lifecycle:final-cleanup"
 omarchy-plugin-remove "$ID" --yes
 [[ ! -e "$TARGET" ]]
-FINAL_COUNT=$(plugin_row | jq 'length')
+FINAL_COUNT=$(wait_plugin_count 0)
 [[ "$FINAL_COUNT" == 0 ]]
 
 jq -nc --argjson added "$ADDED_COUNT" --argjson enabled "$ENABLED_COUNT" \
