@@ -44,7 +44,8 @@
 ## Balance distribution
 
 1. Run `npm run test:balance` against the unchanged engine and policy version.
-2. Verify exactly 100,000 terminal runs cover all 240 matrix cells.
+2. Verify exactly 100,000 terminal runs cover all 480 matrix cells across both
+   rules profiles.
 3. Verify reckless, naive, skilled-heavy, and skilled-light completion rates
    remain inside their Blueprint bands.
 4. Verify the exploit policy does not beat either skilled policy on survival and

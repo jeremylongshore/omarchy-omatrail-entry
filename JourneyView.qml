@@ -6,6 +6,7 @@ Item {
   id: root
 
   property string profile: "green"
+  property string rulesProfile: "omatrail"
   property string difficulty: "normal"
   property bool active: false
   property bool setupVisible: true
@@ -15,7 +16,7 @@ Item {
   property string pendingRiverChoice: ""
   property int seed: 1848
   property string fontFamily: Style.font.menuFamily
-  property var journeyState: Journey.createJourney({ seed: seed, profile: profile, difficulty: difficulty })
+  property var journeyState: Journey.createJourney({ seed: seed, profile: profile, rulesProfile: rulesProfile, difficulty: difficulty })
 
   readonly property bool greenMode: profile !== "color"
   readonly property color pageColor: greenMode ? "#020603" : "#1a2630"
@@ -26,6 +27,8 @@ Item {
   readonly property color accentColor: greenMode ? "#163d1f" : "#d8c06b"
   readonly property var currentStop: Journey.ROUTE[Math.min(Journey.ROUTE.length - 1, journeyState.targetIndex)]
   readonly property string screenName: setupVisible ? "EXPEDITION SETUP" : journeyState.phase.toUpperCase()
+  readonly property string activeRulesProfile: setupVisible ? rulesProfile : journeyState.rulesProfile
+  readonly property string activeRulesLabel: Journey.rulesProfileLabel(activeRulesProfile)
 
   signal requestHunt(var config)
   signal journeyChanged(var state)
@@ -47,6 +50,7 @@ Item {
     root.journeyState = Journey.createJourney({
       seed: root.seed,
       profile: root.profile,
+      rulesProfile: root.rulesProfile,
       difficulty: root.difficulty,
       occupation: occupationChoice.textValue,
       departureMonth: monthChoice.monthValue,
@@ -70,6 +74,7 @@ Item {
         season: Journey.seasonFor(root.journeyState.month),
         ammo: root.journeyState.inventory.ammunition,
         carryCapacity: Math.max(40, Math.min(200, 220 - root.journeyState.inventory.food)),
+        rulesProfile: root.journeyState.rulesProfile,
         journeyHunt: true
       })
     }
@@ -82,6 +87,7 @@ Item {
   function restoreState(state) {
     if (Journey.validate(state).length) return false
     root.journeyState = Journey.dispatch(state, { type: "SET_PROFILE", value: root.profile })
+    root.rulesProfile = state.rulesProfile
     root.difficulty = state.difficulty
     root.setupVisible = false
     return true
@@ -196,7 +202,8 @@ Item {
         }
         Text {
           width: parent.width
-          text: root.greenMode ? "GREEN MONITOR EXPEDITION TERMINAL" : "COLOR DELUXE EXPEDITION JOURNAL"
+          text: (root.greenMode ? "GREEN MONITOR" : "COLOR DELUXE")
+            + "  |  " + root.activeRulesLabel.toUpperCase()
           textFormat: Text.PlainText
           elide: Text.ElideRight
           color: root.mutedColor
@@ -293,6 +300,34 @@ Item {
         Row {
           anchors.horizontalCenter: parent.horizontalCenter
           spacing: 12
+          Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: "RULES"
+            textFormat: Text.PlainText
+            color: root.mutedColor
+            font.family: root.fontFamily
+            font.pixelSize: 12
+            font.bold: true
+          }
+          OmatrailButton {
+            width: 190
+            label: "omaTrail"
+            selected: root.rulesProfile === "omatrail"
+            inkColor: root.inkColor; activeFillColor: root.accentColor; fontFamily: root.fontFamily
+            onClicked: root.rulesProfile = "omatrail"
+          }
+          OmatrailButton {
+            width: 230
+            label: "CLASSIC 1978-INSPIRED"
+            selected: root.rulesProfile === "classic-1978"
+            inkColor: root.inkColor; activeFillColor: root.accentColor; fontFamily: root.fontFamily
+            onClicked: root.rulesProfile = "classic-1978"
+          }
+        }
+
+        Row {
+          anchors.horizontalCenter: parent.horizontalCenter
+          spacing: 12
           OmatrailButton {
             id: occupationChoice
             property string textValue: "farmer"
@@ -328,7 +363,7 @@ Item {
           width: parent.width
           text: root.recoveryRequired
             ? "The prior save and backup could not be restored. Start Fresh deletes them; press Begin afterward to create a new expedition."
-            : "Your occupation sets the starting budget and one practical advantage. Difficulty changes the hunt and final score."
+            : Journey.RULE_PROFILES[root.rulesProfile].description
           textFormat: Text.PlainText
           wrapMode: Text.WordWrap
           horizontalAlignment: Text.AlignHCenter
@@ -375,7 +410,8 @@ Item {
             }
             Text {
               width: 190; anchors.verticalCenter: parent.verticalCenter
-              text: "OWN " + root.journeyState.inventory[parent.modelData] + "  |  +" + parent.itemRule.step + " FOR $" + parent.itemRule.price
+              text: "OWN " + root.journeyState.inventory[parent.modelData] + "  |  +" + parent.itemRule.step
+                + " FOR $" + Journey.purchaseCost(root.journeyState, parent.modelData, 1)
               textFormat: Text.PlainText
               elide: Text.ElideRight
               color: root.mutedColor; font.family: root.fontFamily; font.pixelSize: 12
@@ -490,8 +526,10 @@ Item {
           }
           OmatrailButton {
             width: parent.actionWidth
-            compact: true; label: "HUNT"
-            enabled: root.journeyState.inventory.ammunition > 0
+            compact: true
+            label: root.journeyState.rulesProfile === "classic-1978"
+              && root.journeyState.lastHuntMile === root.journeyState.miles ? "HUNTED HERE" : "HUNT"
+            enabled: Journey.canHunt(root.journeyState)
             inkColor: root.inkColor; activeFillColor: root.accentColor; fontFamily: root.fontFamily
             onClicked: root.dispatchAction({ type: "BEGIN_HUNT" })
           }
@@ -636,7 +674,7 @@ Item {
         visible: !root.setupVisible && (root.journeyState.phase === "victory" || root.journeyState.phase === "loss")
         anchors.centerIn: parent; width: Math.min(parent.width, 760); spacing: 14
         Text { width: parent.width; text: root.journeyState.phase === "victory" ? "WEST VALLEY REACHED" : "THE TRAIL ENDS HERE"; textFormat: Text.PlainText; elide: Text.ElideRight; color: root.inkColor; font.family: root.fontFamily; font.pixelSize: 28; font.bold: true; horizontalAlignment: Text.AlignHCenter }
-        Text { width: parent.width; text: root.journeyState.ending ? "SCORE " + root.journeyState.ending.score + "  |  DURATION " + root.journeyState.ending.durationDays + " DAYS  |  LEVEL " + root.journeyState.ending.difficulty.toUpperCase() + "  |  SEED " + root.journeyState.ending.seed : ""; textFormat: Text.PlainText; elide: Text.ElideRight; color: root.mutedColor; font.family: root.fontFamily; font.pixelSize: 14; horizontalAlignment: Text.AlignHCenter }
+        Text { width: parent.width; text: root.journeyState.ending ? Journey.rulesProfileLabel(root.journeyState.ending.rulesProfile).toUpperCase() + "  |  SCORE " + root.journeyState.ending.score + "  |  DURATION " + root.journeyState.ending.durationDays + " DAYS  |  LEVEL " + root.journeyState.ending.difficulty.toUpperCase() + "  |  SEED " + root.journeyState.ending.seed : ""; textFormat: Text.PlainText; elide: Text.ElideRight; color: root.mutedColor; font.family: root.fontFamily; font.pixelSize: 14; horizontalAlignment: Text.AlignHCenter }
         Text { width: parent.width; text: "SURVIVORS: " + root.survivorText(); textFormat: Text.PlainText; wrapMode: Text.WordWrap; color: root.inkColor; font.family: root.fontFamily; font.pixelSize: 13; horizontalAlignment: Text.AlignHCenter }
         Text { width: parent.width; text: "LOSSES: " + root.lossText(); textFormat: Text.PlainText; wrapMode: Text.WordWrap; color: root.mutedColor; font.family: root.fontFamily; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
         Text { width: parent.width; text: root.resourceText(); textFormat: Text.PlainText; wrapMode: Text.WordWrap; color: root.mutedColor; font.family: root.fontFamily; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }

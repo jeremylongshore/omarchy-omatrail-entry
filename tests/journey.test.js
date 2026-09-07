@@ -42,6 +42,7 @@ test("journey creation cleans setup input and establishes five travelers", () =>
   assert.deepEqual(state.party.map((member) => member.name), ["A", "Morgan", "Bad", "A very long traveler nam", "June"])
   assert.equal(state.cash, Journey.OCCUPATIONS.doctor.budget)
   assert.equal(state.party[0].health, 94)
+  assert.equal(state.wagonCondition, 88)
   assert.deepEqual(Journey.validate(state), [])
   assert.equal(Journey.canonicalOccupation("unknown"), "farmer")
   assert.equal(Journey.canonicalDifficulty("unknown"), "normal")
@@ -49,6 +50,165 @@ test("journey creation cleans setup input and establishes five travelers", () =>
   assert.equal(Journey.canonicalPace("fast"), "steady")
   assert.equal(Journey.canonicalRations("bare"), "bare")
   assert.equal(Journey.canonicalRations("huge"), "filling")
+})
+
+test("rules profiles are explicit, canonical, and begin with distinct historical pressure", () => {
+  const modern = newJourney({ occupation: "doctor", rulesProfile: "unknown" })
+  const classic = newJourney({ occupation: "doctor", rulesProfile: "Classic 1978-inspired" })
+  assert.equal(modern.rulesProfile, "omatrail")
+  assert.equal(modern.year, 1848)
+  assert.equal(modern.cash, Journey.OCCUPATIONS.doctor.budget)
+  assert.equal(classic.rulesProfile, "classic-1978")
+  assert.equal(classic.year, 1847)
+  assert.equal(classic.cash, 700)
+  assert.equal(Journey.canonicalRulesProfile("classic"), "classic-1978")
+  assert.equal(Journey.canonicalRulesProfile("omaTrail"), "omatrail")
+  assert.equal(Journey.rulesProfileLabel(classic.rulesProfile), "Classic 1978-inspired")
+  assert.match(Journey.RULE_PROFILES.omatrail.description, /four-day/)
+  assert.match(Journey.RULE_PROFILES["classic-1978"].description, /two-week/)
+  assert.deepEqual(Journey.validate(classic), [])
+  assert.equal(newJourney().profile, "green")
+  assert.equal(newJourney({ occupation: "carpenter" }).wagonCondition, 100)
+})
+
+test("classic travel, outfitting, events, and hunting differ without changing the story", () => {
+  let modern = trailReady({ seed: 41, rulesProfile: "omatrail" })
+  let classic = trailReady({ seed: 41, rulesProfile: "classic-1978" })
+  modern = Journey.dispatch(modern, { type: "TRAVEL" })
+  classic = Journey.dispatch(classic, { type: "TRAVEL" })
+  assert.equal(Journey.journeyDurationDays(modern), 4)
+  assert.equal(Journey.journeyDurationDays(classic), 14)
+  assert.notEqual(classic.miles, modern.miles)
+  assert.ok(classic.inventory.food > modern.inventory.food)
+
+  const modernFort = newJourney({ rulesProfile: "omatrail" })
+  const classicFort = newJourney({ rulesProfile: "classic-1978" })
+  modernFort.miles = classicFort.miles = 356
+  assert.equal(Journey.purchaseCost(modernFort, "parts", 1), 27)
+  assert.equal(Journey.purchaseCost(classicFort, "parts", 1), 30)
+  assert.equal(Journey.purchaseCost(null, "parts", 2), 40)
+  assert.equal(Journey.purchaseCost(modernFort, "parts", 2), 54)
+  assert.equal(Journey.purchaseCost(modernFort, "unknown", 1), 0)
+  assert.equal(Journey.purchaseCost(null, "parts", 0), 20)
+  assert.equal(Journey.purchaseCost(null, "parts", 99), 400)
+
+  const shortAmmo = trailReady({ rulesProfile: "classic-1978" })
+  shortAmmo.inventory.ammunition = 39
+  assert.equal(Journey.minimumHuntAmmo(shortAmmo), 40)
+  assert.match(Journey.dispatch(shortAmmo, { type: "BEGIN_HUNT" }).message, /at least 40 rounds/)
+  shortAmmo.phase = "store"
+  assert.match(Journey.dispatch(shortAmmo, { type: "DEPART" }).message, /40 ammunition/)
+  const exactAmmo = trailReady({ rulesProfile: "classic-1978" })
+  exactAmmo.inventory.ammunition = 40
+  assert.equal(Journey.canHunt(exactAmmo), true)
+  assert.equal(Journey.dispatch(exactAmmo, { type: "BEGIN_HUNT" }).phase, "hunt")
+  const lowAmmo = trailReady({ rulesProfile: "classic-1978" })
+  lowAmmo.inventory.ammunition = 39
+  assert.equal(Journey.canHunt(lowAmmo), false)
+  const landmarkHunt = trailReady()
+  landmarkHunt.phase = "landmark"
+  assert.equal(Journey.canHunt(landmarkHunt), true)
+  assert.equal(Journey.dispatch(landmarkHunt, { type: "BEGIN_HUNT" }).phase, "hunt")
+  const storeHunt = newJourney()
+  assert.equal(Journey.canHunt(storeHunt), false)
+  const eventHunt = trailReady()
+  eventHunt.phase = "event"
+  assert.equal(Journey.canHunt(eventHunt), false)
+  const modernRepeat = trailReady()
+  modernRepeat.lastHuntMile = modernRepeat.miles
+  assert.equal(Journey.canHunt(modernRepeat), true)
+  let classicHunt = Journey.dispatch(trailReady({ rulesProfile: "classic-1978" }), { type: "BEGIN_HUNT" })
+  classicHunt = Journey.dispatch(classicHunt, { type: "APPLY_HUNT_RESULT", result: {
+    ammoUsed: 3, carriedPounds: 140, wastedPounds: 10, expeditionDays: 1, partyEnergyCost: 4
+  } })
+  assert.equal(classicHunt.inventory.food, 600)
+  assert.equal(classicHunt.harvestedPounds, 150)
+  assert.equal(classicHunt.wastedPounds, 50)
+  assert.equal(classicHunt.lastHuntMile, classicHunt.miles)
+  assert.equal(Journey.canHunt(classicHunt), false)
+  assert.match(Journey.dispatch(classicHunt, { type: "BEGIN_HUNT" }).message, /after traveling/)
+  classicHunt.miles += 1
+  assert.equal(Journey.canHunt(classicHunt), true)
+  assert.equal(Journey.canHunt(null), false)
+
+  let modernHunt = Journey.dispatch(trailReady(), { type: "BEGIN_HUNT" })
+  modernHunt = Journey.dispatch(modernHunt, { type: "APPLY_HUNT_RESULT", result: {
+    ammoUsed: 3, carriedPounds: 140, wastedPounds: 10, expeditionDays: 1, partyEnergyCost: 4
+  } })
+  assert.equal(modernHunt.inventory.food, 640)
+  assert.equal(modernHunt.wastedPounds, 10)
+  assert.deepEqual(classicHunt.party.map((member) => member.name), modern.party.map((member) => member.name))
+  assert.ok(Journey.EVENTS.every((event) => event.source === "fictional-composite"))
+})
+
+test("classic event pressure is deterministic and higher than the omaTrail profile", () => {
+  function eventCounts(rulesProfile, difficulty) {
+    const counts = { none: 0 }
+    for (let seed = 1; seed <= 400; seed++) {
+      const state = trailReady({ seed: seed * 100003, rulesProfile, difficulty })
+      state.wagonCondition = 70
+      state.party.forEach((member) => { member.fatigue = 40; member.health = 55 })
+      const event = Journey.chooseEvent(state)
+      const id = event ? event.id : "none"
+      counts[id] = (counts[id] || 0) + 1
+    }
+    return counts
+  }
+  assert.deepEqual(eventCounts("omatrail", "normal"), {
+    none: 276, "evt-fall": 15, "evt-aid": 2, "evt-trade": 24, "evt-fever": 25,
+    "evt-dispute": 24, "evt-storm": 18, "evt-view": 10, "evt-axle": 6
+  })
+  assert.deepEqual(eventCounts("classic-1978", "easy"), {
+    none: 206, "evt-fall": 39, "evt-storm": 40, "evt-fever": 39, "evt-dispute": 11,
+    "evt-aid": 26, "evt-axle": 38, "evt-trade": 1
+  })
+  assert.deepEqual(eventCounts("classic-1978", "normal"), {
+    none: 169, "evt-axle": 46, "evt-fall": 47, "evt-storm": 47, "evt-fever": 46,
+    "evt-dispute": 11, "evt-aid": 26, "evt-trade": 8
+  })
+  assert.deepEqual(eventCounts("classic-1978", "hard"), {
+    none: 129, "evt-axle": 54, "evt-fall": 54, "evt-storm": 55, "evt-fever": 47,
+    "evt-dispute": 12, "evt-aid": 26, "evt-trade": 16, "evt-view": 7
+  })
+})
+
+test("classic distance responds exactly to pace, terrain, equipment, and seed", () => {
+  const expected = {
+    "steady:plains": 666, "steady:mountains": 620, "steady:desert": 640,
+    "strenuous:plains": 680, "strenuous:mountains": 630, "strenuous:desert": 652,
+    "grueling:plains": 694, "grueling:mountains": 639, "grueling:desert": 663
+  }
+  for (const pace of ["steady", "strenuous", "grueling"]) {
+    for (const region of ["plains", "mountains", "desert"]) {
+      let state = trailReady({ seed: 41, rulesProfile: "classic-1978" })
+      state.pace = pace
+      state.region = region
+      state.wagonCondition = 80
+      state.oxenCondition = 70
+      state.miles = 522
+      state.targetIndex = 10
+      state = Journey.dispatch(state, { type: "TRAVEL" })
+      assert.equal(state.miles, expected[pace + ":" + region])
+      assert.equal(state.day, 15)
+      assert.equal(state.inventory.food, 477)
+      assert.equal(state.rngState, 3045964776)
+      assert.equal(state.wagonCondition, 76)
+      assert.equal(state.oxenCondition, pace === "steady" ? 66 : pace === "strenuous" ? 62 : 54)
+      assert.equal(state.party[0].health, pace === "steady" ? 88 : pace === "strenuous" ? 84 : 78)
+      assert.equal(state.party[0].fatigue, pace === "steady" ? 6 : pace === "strenuous" ? 14 : 24)
+      assert.equal(state.party[0].morale, 77)
+    }
+  }
+
+  const rationFood = { filling: 477, meager: 482, bare: 487 }
+  for (const [rations, food] of Object.entries(rationFood)) {
+    let state = trailReady({ seed: 41, rulesProfile: "classic-1978" })
+    state.rations = rations
+    state.miles = 522
+    state.targetIndex = 10
+    state = Journey.dispatch(state, { type: "TRAVEL" })
+    assert.equal(state.inventory.food, food)
+  }
 })
 
 test("seed draws, text bounds, calendar seasons, and route records are deterministic", () => {
@@ -151,6 +311,12 @@ test("weather spans seasonal tables and display profile never changes rules", ()
     green = Journey.dispatch(green, action)
     color = Journey.dispatch(color, action)
   }
+  assert.deepEqual(Journey.semanticSnapshot(green), Journey.semanticSnapshot(color))
+
+  green = trailReady({ seed: 77, profile: "green", rulesProfile: "classic-1978" })
+  color = Journey.dispatch(green, { type: "SET_PROFILE", value: "Color Deluxe" })
+  green = Journey.dispatch(green, { type: "TRAVEL" })
+  color = Journey.dispatch(color, { type: "TRAVEL" })
   assert.deepEqual(Journey.semanticSnapshot(green), Journey.semanticSnapshot(color))
 })
 
@@ -407,6 +573,9 @@ test("rest and the hunting bridge consume time and reconcile harvest exactly", (
   almostFed = Journey.dispatch(almostFed, { type: "REST" })
   assert.equal(almostFed.inventory.food, 0)
   assert.equal(almostFed.party[0].health, 78)
+  let landmarkRest = trailReady({ seed: 95 })
+  landmarkRest.phase = "landmark"
+  assert.equal(Journey.dispatch(landmarkRest, { type: "REST" }).daysRested, 2)
   for (let turn = 0; turn < 20 && starving.phase !== "loss"; turn++)
     starving = Journey.dispatch(starving, { type: "REST" })
   assert.equal(starving.phase, "loss")
@@ -478,7 +647,9 @@ test("rest and the hunting bridge consume time and reconcile harvest exactly", (
 
   const noAmmo = trailReady()
   noAmmo.inventory.ammunition = 0
-  assert.equal(Journey.dispatch(noAmmo, { type: "BEGIN_HUNT" }).phase, "trail")
+  const noAmmoResult = Journey.dispatch(noAmmo, { type: "BEGIN_HUNT" })
+  assert.equal(noAmmoResult.phase, "trail")
+  assert.equal(noAmmoResult.message, "No ammunition remains")
 
   let actual = Journey.dispatch(trailReady({ seed: 22 }), { type: "BEGIN_HUNT" })
   let hunt = Hunt.dispatch(Hunt.createHunt(actual.huntSeed, {
@@ -492,24 +663,31 @@ test("rest and the hunting bridge consume time and reconcile harvest exactly", (
   assert.match(actual.message, /regional risk/)
 })
 
-test("a careful supply, repair, rest, and hunting policy can finish every difficulty", () => {
+test("a careful supply, repair, rest, and hunting policy can finish both rules profiles", () => {
   function buy(state, item, steps) {
     return Journey.dispatch(state, { type: "BUY", item, steps })
   }
+  function buyTo(state, item, target) {
+    while (state.inventory[item] < target) {
+      const rule = Journey.ITEMS[item]
+      const steps = Math.min(20, Math.max(1, Math.ceil((target - state.inventory[item]) / rule.step)))
+      const before = state.inventory[item]
+      state = buy(state, item, steps)
+      if (state.inventory[item] === before && steps > 1) state = buy(state, item, 1)
+      if (state.inventory[item] === before) break
+    }
+    return state
+  }
   function stock(state) {
-    for (const [item, steps] of [
-      ["oxen", 6], ["food", 20], ["food", 20], ["food", 8],
-      ["ammunition", 20], ["ammunition", 10], ["clothing", 5],
-      ["medicine", 10], ["parts", 10]
-    ]) state = buy(state, item, steps)
+    const targets = state.rulesProfile === "classic-1978"
+      ? { oxen: 8, food: 900, ammunition: 120, clothing: 8, medicine: 6, parts: 8 }
+      : { oxen: 12, food: 1200, ammunition: 300, clothing: 10, medicine: 10, parts: 10 }
+    for (const item of Journey.itemKeys()) state = buyTo(state, item, targets[item])
     return state
   }
-  function topUpFood(state) {
-    for (const steps of [20, 20, 20, 10, 5, 2, 1]) state = buy(state, "food", steps)
-    return state
-  }
-  function play(seed, difficulty) {
-    let state = Journey.dispatch(stock(newJourney({ seed, difficulty, occupation: "banker" })), { type: "DEPART" })
+  function topUpFood(state) { return buyTo(state, "food", 1000) }
+  function play(seed, difficulty, rulesProfile) {
+    let state = Journey.dispatch(stock(newJourney({ seed, difficulty, rulesProfile, occupation: "banker" })), { type: "DEPART" })
     for (let turn = 0; turn < 500 && state.phase !== "victory" && state.phase !== "loss"; turn++) {
       if (state.phase === "trail") {
         if (Journey.totalPartyHealth(state) < 55 || Journey.averageFatigue(state) > 70)
@@ -540,20 +718,59 @@ test("a careful supply, repair, rest, and hunting policy can finish every diffic
     return state
   }
 
-  for (const difficulty of ["easy", "normal", "hard"]) {
-    for (let seed = 1; seed <= 60; seed++) {
-      const result = play(seed, difficulty)
-      assert.equal(result.phase, "victory", difficulty + " seed " + seed)
-      assert.ok(result.ending.score > 0)
+  const viability = []
+  for (const rulesProfile of ["omatrail", "classic-1978"]) {
+    for (const difficulty of ["easy", "normal", "hard"]) {
+      let victories = 0
+      for (let seed = 1; seed <= 60; seed++) {
+        const result = play(seed, difficulty, rulesProfile)
+        assert.ok(["victory", "loss"].includes(result.phase), rulesProfile + " " + difficulty + " seed " + seed)
+        if (result.phase === "victory") {
+          victories += 1
+          assert.ok(result.ending.score > 0)
+        }
+      }
+      viability.push({ rulesProfile, difficulty, victories })
     }
   }
+  assert.equal(viability.length, 6)
+  for (const result of viability)
+    assert.ok(result.victories >= 45,
+      `${result.rulesProfile} ${result.difficulty} won ${result.victories}/60 careful-policy journeys`)
 })
 
 test("scores and endings contain survivors, losses, resources, difficulty, and seed", () => {
   const state = trailReady({ seed: 202, difficulty: "hard" })
   const normal = Journey.scoreJourney({ ...structuredClone(state), difficulty: "normal" })
   const hard = Journey.scoreJourney(state)
+  assert.equal(Journey.scoreJourney({ ...structuredClone(state), difficulty: "easy" }), 1835)
+  assert.equal(normal, 2294)
+  assert.equal(hard, 3097)
   assert.ok(hard > normal)
+  const noFood = structuredClone(state)
+  noFood.inventory.food = 0
+  assert.equal(Journey.scoreJourney(noFood), 2962)
+  const noAmmo = structuredClone(state)
+  noAmmo.inventory.ammunition = 0
+  assert.equal(Journey.scoreJourney(noAmmo), 2894)
+  const noCash = structuredClone(state)
+  noCash.cash = 0
+  assert.equal(Journey.scoreJourney(noCash), 2942)
+  const hurt = structuredClone(state)
+  hurt.party[0].health = 20
+  assert.equal(Journey.scoreJourney(hurt), 3009)
+  const fourSurvivors = structuredClone(state)
+  fourSurvivors.party[0].alive = false
+  fourSurvivors.party[0].health = 0
+  fourSurvivors.party[0].condition = "lost"
+  assert.equal(Journey.scoreJourney(fourSurvivors), 2576)
+  const wasteful = structuredClone(state)
+  wasteful.wastedPounds = 100
+  assert.equal(Journey.scoreJourney(wasteful), 2962)
+  const late = structuredClone(state)
+  late.month = 9
+  late.day = 10
+  assert.equal(Journey.scoreJourney(late), 2882)
   const won = Journey.finishJourney(structuredClone(state), "arrival")
   assert.equal(won.phase, "victory")
   assert.equal(won.ending.reason, "arrival")
@@ -565,6 +782,11 @@ test("scores and endings contain survivors, losses, resources, difficulty, and s
   assert.equal(abandoned.phase, "loss")
   assert.equal(abandoned.ending.reason, "abandoned")
   assert.equal(Journey.dispatch(state, { type: "ABANDON", confirmed: false }).phase, "trail")
+  const nextYear = trailReady({ rulesProfile: "classic-1978", departureMonth: 6 })
+  nextYear.year = 1848
+  nextYear.month = 2
+  nextYear.day = 3
+  assert.equal(Journey.journeyDurationDays(nextYear), 242)
 })
 
 test("save serialization is bounded by UTF-8 bytes and round trips valid state", () => {
@@ -575,6 +797,24 @@ test("save serialization is bounded by UTF-8 bytes and round trips valid state",
   const decoded = Journey.parseSave(encoded)
   assert.equal(decoded.valid, true)
   assert.deepEqual(decoded.state, state)
+  const classic = trailReady({ rulesProfile: "classic-1978" })
+  const classicDecoded = Journey.parseSave(Journey.serializeSave(classic))
+  assert.equal(classicDecoded.valid, true)
+  assert.equal(classicDecoded.state.rulesProfile, "classic-1978")
+
+  const legacy = structuredClone(state)
+  delete legacy.rulesProfile
+  delete legacy.lastHuntMile
+  const migrated = Journey.parseSave(JSON.stringify({ schemaVersion: 1, state: legacy }))
+  assert.equal(migrated.valid, true)
+  assert.equal(migrated.state.rulesProfile, "omatrail")
+  assert.equal(migrated.state.lastHuntMile, -1)
+  const legacyEnding = Journey.finishJourney(structuredClone(state), "arrival")
+  delete legacyEnding.rulesProfile
+  delete legacyEnding.ending.rulesProfile
+  const migratedEnding = Journey.parseSave(JSON.stringify({ schemaVersion: 1, state: legacyEnding }))
+  assert.equal(migratedEnding.valid, true)
+  assert.equal(migratedEnding.state.ending.rulesProfile, "omatrail")
   assert.deepEqual(Journey.parseSave(""), { valid: false, reason: "missing", state: null })
   const malformed = Journey.parseSave("{")
   assert.equal(malformed.valid, false)
@@ -614,6 +854,7 @@ test("validation rejects hostile or corrupt state without accepting partial save
     (state) => { state.inventory.food = -1 },
     (state) => { state.targetIndex = 0 },
     (state) => { state.wastedPounds = -1 },
+    (state) => { state.lastHuntMile = state.miles + 1 },
     (state) => { state.harvestedPounds = 0; state.wastedPounds = 1 },
     (state) => { state.day = 500 },
     (state) => { state.month = 13 },
@@ -662,6 +903,7 @@ test("validation rejects hostile or corrupt state without accepting partial save
 test("unavailable actions are inert and action payloads are canonicalized", () => {
   const store = newJourney()
   assert.deepEqual(Journey.dispatch(store, { type: "TRAVEL" }), store)
+  assert.deepEqual(Journey.dispatch(store, { type: "BEGIN_HUNT" }), store)
   assert.deepEqual(Journey.dispatch(store, { type: "NOPE" }), store)
   let trail = trailReady()
   trail = Journey.dispatch(trail, { type: "SET_PACE", value: "invalid" })

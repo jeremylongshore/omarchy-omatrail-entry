@@ -59,11 +59,15 @@ test("dynamic text is plain, bounded, and does not change simulation timing", ()
 
 test("the two profile names and non-color cues are visible in source", () => {
   const overlay = read("Overlay.qml")
+  const journey = read("JourneyView.qml")
   assert.match(overlay, /GREEN MONITOR/)
   assert.match(overlay, /COLOR DELUXE/)
   assert.match(overlay, /COLOR \[V\]/)
   assert.match(overlay, /ASSIST \[H\]/)
   assert.match(overlay, /PAUSE \[P\]/)
+  assert.match(journey, /CLASSIC 1978-INSPIRED/)
+  assert.match(journey, /selected:\s*root\.rulesProfile === "omatrail"/)
+  assert.match(journey, /selected:\s*root\.rulesProfile === "classic-1978"/)
 })
 
 test("trail controls fit the scaled Omarchy viewport", () => {

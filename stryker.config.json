@@ -4,9 +4,19 @@
     "HuntingRules.js:295:0-337:0",
     "HuntingRules.js:338:0-374:0",
     "HuntingRules.js:405:0-418:0",
-    "JourneyRules.js:593:0-611:0",
-    "JourneyRules.js:638:0-668:0",
-    "JourneyRules.js:916:0-931:0"
+    "JourneyRules.js:113:0-121:0",
+    "JourneyRules.js:186:0-189:0",
+    "JourneyRules.js:195:0-197:0",
+    "JourneyRules.js:201:0-202:0",
+    "JourneyRules.js:208:0-210:0",
+    "JourneyRules.js:275:0-291:0",
+    "JourneyRules.js:383:0-399:0",
+    "JourneyRules.js:419:0-434:0",
+    "JourneyRules.js:458:0-474:0",
+    "JourneyRules.js:669:0-686:0",
+    "JourneyRules.js:688:0-752:0",
+    "JourneyRules.js:754:0-766:0",
+    "JourneyRules.js:1007:0-1028:0"
   ],
   "testRunner": "command",
   "commandRunner": {

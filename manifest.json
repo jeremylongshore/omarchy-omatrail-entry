@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "author": "Jeremy Longshore",
   "license": "MIT",
-  "description": "omaTrail opens a frontier survival game from an Omarchy bar button onto a fullscreen trail map for keyboard and mouse. Name your party, buy supplies, set pace and rations, cross rivers, survive illness, trade at forts, and hunt wildlife. Switch between green-and-black Green Monitor graphics and Color Deluxe pixel art without changing rules or saves. It runs offline with no network, telemetry, account, daemon, or elevated access. It writes one bounded save and keeps the prior good save as backup.",
+  "description": "omaTrail launches frontier survival from the Omarchy bar. Name your party, pack a wagon, set pace/rations, cross rivers, face illness, trade, and hunt wildlife. Choose original omaTrail rules or an independently built Classic 1978-inspired profile. Play either in Green Monitor or Color Deluxe graphics by keyboard or mouse. Offline only: no network, telemetry, account, daemon, or elevated access. Saves keep a backup. Design: https://gist.github.com/jeremylongshore/f6bfa2df134361ec33faa552a6df56d1",
   "kinds": [
     "overlay",
     "bar-widget"
@@ -17,7 +17,7 @@
   },
   "barWidget": {
     "displayName": "omaTrail",
-    "description": "omaTrail opens a frontier survival game from an Omarchy bar button onto a fullscreen trail map for keyboard and mouse. Name your party, buy supplies, set pace and rations, cross rivers, survive illness, trade at forts, and hunt wildlife. Switch between green-and-black Green Monitor graphics and Color Deluxe pixel art without changing rules or saves. It runs offline with no network, telemetry, account, daemon, or elevated access. It writes one bounded save and keeps the prior good save as backup.",
+    "description": "omaTrail launches frontier survival from the Omarchy bar. Name your party, pack a wagon, set pace/rations, cross rivers, face illness, trade, and hunt wildlife. Choose original omaTrail rules or an independently built Classic 1978-inspired profile. Play either in Green Monitor or Color Deluxe graphics by keyboard or mouse. Offline only: no network, telemetry, account, daemon, or elevated access. Saves keep a backup. Design: https://gist.github.com/jeremylongshore/f6bfa2df134361ec33faa552a6df56d1",
     "category": "Plugin",
     "defaultSection": "right",
     "aliases": [
@@ -39,7 +39,7 @@
         "label": "Display mode",
         "options": ["Green Monitor", "Color Deluxe"],
         "defaultValue": "Green Monitor",
-        "description": "Choose green-and-black phosphor graphics or the original limited-color pixel palette. Gameplay and saves are identical."
+        "description": "Choose green-and-black phosphor graphics or the limited-color pixel palette. The selected rules and saved journey stay unchanged."
       },
       {
         "key": "difficulty",

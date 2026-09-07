@@ -20,15 +20,15 @@ flaky.tolerance: 0/3 runs
 ## Required lanes
 
 - `npm test`: pure rules, integration, contracts, accessibility, gate harness,
-  hostile save lifecycle cases, 10,000 hunting fields, and 180 seeded
+  hostile save lifecycle cases, 10,000 hunting fields, and 360 seeded
   journey-policy simulations with modeled hunt results.
 - `npm run test:race`: three concurrent clean repetitions.
 - `npm run test:mutation`: Stryker with a 90 floor over hunting fire and
   settlement, journey hunt-result reconciliation, and save parsing. These are
   the state-changing trust and conservation kernels, not declarative content or
   QML export glue.
-- `npm run test:balance`: 100,000 fixed runs across five versioned policies,
-  three difficulties, four occupations, and four departure months. The lane
+- `npm run test:balance`: 100,000 fixed runs across two rules profiles, five
+  versioned policies, three difficulties, four occupations, and four departure months. The lane
   composes the public journey dispatcher with genuine hunting-engine results,
   validates every transition, and writes an engine-hashed distribution report.
 - `npm run audit`: deterministic audit-harness verification and scan.
@@ -49,19 +49,22 @@ release evidence.
 
 The current balance report is `reports/balance/balance-100000.json`. Its
 aggregate SHA-256 is
-`dabb03ad141fd906377719655f8519e4e70a8182d9ff9721f6188c4a4ac83319`.
-A 1,000-run sentinel replay produced the same canonical report hash with one
-worker and eight workers.
+`776ddabcd55a089c6292a799f5fd60f8dacd8b753168ac237ae394e41fbbde7a`.
+All 100,000 runs reached a terminal state. Across both rules profiles,
+skilled-heavy won 82.56 percent, skilled-light won 77.22 percent, and exploit
+won 51.82 percent with a median score of 919. Within Classic, exploit remained
+below both skilled policies on survival and scored far lower while averaging
+about 735 pounds of avoidable waste.
 
 The current mutation report is `reports/mutation/mutation.json`. The refreshed
-current-test run killed 195 of 206 covered mutants, left 11 survivors, recorded
-zero uncovered mutants or errors, and scored 94.66 percent against the 90
+current-test run killed 464 of 497 covered mutants, left 33 survivors, recorded
+zero uncovered mutants, timeouts, or errors, and scored 93.36 percent against the 90
 percent break threshold. The report is Git-trackable and hash-pinned together
 with the mutation configuration and test corpus.
 
 The current candidate render ledger is `evidence/render-matrix/matrix.json`.
-It contains ten 1280 by 720 frames over one source fingerprint: hunt, river,
-event, trail, and ending in Green Monitor and Color Deluxe. Every PNG and raw
+It contains twenty 1280 by 720 frames over one source fingerprint: hunt, river,
+event, trail, and ending in both rules profiles and in Green Monitor and Color Deluxe. Every PNG and raw
 shell log reconciles to its receipt. These artifacts come from a dirty
 development tree; regenerate them from the exact clean target SHA before
 release approval.

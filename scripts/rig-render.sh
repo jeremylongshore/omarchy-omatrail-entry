@@ -21,6 +21,7 @@ RES="${OMARCHY_RIG_RESOLUTION:-1280x720}"
 SCALE="${OMARCHY_RIG_SCALE:-1.25}"
 FIXTURE="${OMATRAIL_RIG_FIXTURE:-hunt-save.json}"
 DISPLAY_MODE="${OMATRAIL_RIG_DISPLAY_MODE:-}"
+RULES_PROFILE="${OMATRAIL_RIG_RULES_PROFILE:-omatrail}"
 RUNTIME_AUDIT="${OMATRAIL_RUNTIME_AUDIT:-false}"
 
 mkdir -p "$(dirname "$OUT")" "$(dirname "$PROOF_OUT")"
@@ -38,6 +39,10 @@ fi
 case "$DISPLAY_MODE" in
   ""|"Green Monitor"|"Color Deluxe") ;;
   *) echo "rig-render: invalid display mode" >&2; exit 2 ;;
+esac
+case "$RULES_PROFILE" in
+  omatrail|classic-1978) ;;
+  *) echo "rig-render: invalid rules profile" >&2; exit 2 ;;
 esac
 case "$RUNTIME_AUDIT" in
   true|false) ;;
@@ -99,7 +104,7 @@ cat > "$REMOTE" <<REMOTE_EOF
 #!/bin/sh
 set -eu
 MOD="$MOD"; NAME="$NAME"; RUN_ID="$RUN_ID"; RES="$RES"; SCALE="$SCALE"
-FIXTURE="$FIXTURE"; DISPLAY_MODE="$DISPLAY_MODE"
+FIXTURE="$FIXTURE"; DISPLAY_MODE="$DISPLAY_MODE"; RULES_PROFILE="$RULES_PROFILE"
 RUNTIME_AUDIT="$RUNTIME_AUDIT"
 RUNTIME=/tmp/rigrender-runtime-\$RUN_ID
 RIG_ROOT=/tmp/rigrender-home-\$RUN_ID
@@ -169,6 +174,7 @@ fi
 
 export HOME="\$RIG_ROOT" OMARCHY_PATH=/root/omarchy PLUGIN_DIR MOD
 export OMATRAIL_E2E_SAVE="\$FIXTURE"
+export OMATRAIL_E2E_RULES_PROFILE="\$RULES_PROFILE"
 export PATH="\$OMARCHY_PATH/bin:\$PATH"
 if [ -d "\$PLUGIN_DIR/e2e/bin" ]; then
   for fixture_command in "\$PLUGIN_DIR"/e2e/bin/*; do
@@ -378,13 +384,13 @@ jq -n --arg fp "$FP" --arg commit "$SOURCE_COMMIT" --argjson dirty "$SOURCE_DIRT
   --arg archive "$ARCHIVE_SHA" --arg remote "$REMOTE_SHA" --arg rig "$HOST/$CONTAINER" \
   --arg run "$REMOTE_RUN_ID" --arg logSha "$RAW_LOG_SHA" --arg sha "$PREVIEW_SHA" \
   --arg packageBoundary "$PACKAGE_BOUNDARY" \
-  --arg fixture "$FIXTURE" --arg displayMode "$DISPLAY_MODE" \
+  --arg fixture "$FIXTURE" --arg displayMode "$DISPLAY_MODE" --arg rulesProfile "$RULES_PROFILE" \
   --arg dimensions "${DIMS/x/ x }" --arg coverage "$COVERAGE" \
   --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
   '{fingerprint:$fp,sourceCommit:$commit,sourceDirty:$dirty,
     sourcePackageSha256:$archive,remotePackageSha256:$remote,rig:$rig,runId:$run,rawShellLogSha256:$logSha,
     packageBoundary:$packageBoundary,
-    fixture:$fixture,displayModeOverride:$displayMode,
+    fixture:$fixture,displayModeOverride:$displayMode,rulesProfileOverride:$rulesProfile,
     evidenceBoundary:"isolated real Omarchy shell and QML under a dedicated headless compositor; plugin-specific fixture hook when present; live plugin IPC toggle; direct full-frame grim capture with no crop or image post-processing",
     visualInspection:{status:"pending",previewSha256:$sha,checks:[]},
     previewSha256:$sha,dimensions:$dimensions,nonblackCoverage:($coverage|tonumber),capturedAt:$at}' \

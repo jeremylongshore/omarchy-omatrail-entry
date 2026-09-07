@@ -1,8 +1,9 @@
 # omaTrail dual-profile render matrix
 
-This directory retains five deterministic gameplay states in both Green
-Monitor and Color Deluxe. Every PNG is an uncropped 1280 by 720 frame captured
-after a live plugin IPC toggle in an isolated Buzz Omarchy shell.
+This directory retains five deterministic gameplay states for both omaTrail and
+Classic 1978-inspired rules in both Green Monitor and Color Deluxe. Every PNG
+is an uncropped 1280 by 720 frame captured after a live plugin IPC toggle in an
+isolated Buzz Omarchy shell. Classic files use the `classic-` prefix.
 
 Each frame has two adjacent provenance artifacts:
 
@@ -12,7 +13,7 @@ Each frame has two adjacent provenance artifacts:
   receipt. Standard headless compositor and unavailable-service noise may be
   present; the matrix lane rejects plugin-sourced QML warnings.
 
-`matrix.json` summarizes all ten receipts and fails generation if the source
+`matrix.json` summarizes all twenty receipts and fails generation if the source
 fingerprint changes during the matrix run. Reproduce the complete set with:
 
 ```bash
@@ -30,6 +31,6 @@ OMATRAIL_MATRIX_REQUIRE_CLEAN=true \
 ```
 
 The matrix captures into an external temporary directory so a clean repository
-stays clean for all ten rig runs. Only after commit, fingerprint, package, and
+stays clean for all twenty rig runs. Only after commit, fingerprint, package, and
 dirty-state consistency checks pass does the lane publish the completed set
 into this directory.

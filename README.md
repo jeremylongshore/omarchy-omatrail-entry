@@ -13,7 +13,9 @@
 
 omaTrail is an offline frontier survival game built directly into the Omarchy
 shell. Open it from the bar, name a party of five, outfit a wagon, cross rivers,
-survive trail events, and hunt moving wildlife on the way to West Valley.
+survive trail events, and hunt moving wildlife on the way to West Valley. Choose
+the original omaTrail rules or an independently implemented Classic
+1978-inspired profile before departure.
 
 <p align="center">
   <a href="evidence/render-matrix/color-hunt.png">
@@ -23,11 +25,23 @@ survive trail events, and hunt moving wildlife on the way to West Valley.
   <sub>Live 1280x720 capture from the Buzz Omarchy rig. Click for the full image.</sub>
 </p>
 
-## Two looks, one trail
+## Two rule sets, two looks
 
 Switch between Green Monitor and Color Deluxe at any point, including during a
-hunt. Both profiles use the same deterministic rules and save file, so the
-choice is entirely visual.
+hunt. That display choice is entirely visual. It is independent from the saved
+rules profile, so either rule set works in either visual style.
+
+| Rules profile | Experience |
+| --- | --- |
+| omaTrail | Four-day turns, occupation budgets, current omaTrail balance, and the complete original story. |
+| Classic 1978-inspired | An 1847 start, fixed $700 budget, two-week turns, higher fort prices, classic ration pressure, more frequent weighted mishaps, and a 40-round hunting requirement. |
+
+The Classic profile learns from the functional behavior of the May/June 1978
+Creative Computing listing. It does not copy that program, its prose, or its
+assets. The route, characters, interface, event writing, graphics, and
+real-time hunting game are original omaTrail work. Read the
+[detailed design and provenance record](contracts/classic-1978.md), also published as a
+[public Gist](https://gist.github.com/jeremylongshore/f6bfa2df134361ec33faa552a6df56d1).
 
 | Green Monitor | Color Deluxe |
 | --- | --- |
@@ -57,12 +71,12 @@ claim to reproduce one specific historic journey.
 ## Gameplay
 
 - Five named travelers with health, fatigue, morale, and survival state
-- Four occupations, three difficulty levels, and four departure months
+- Two rules profiles, four occupations, three difficulty levels, and four departure months
 - An outfitter selling oxen, food, ammunition, clothing, medicine, and parts
 - Pace, rations, weather, wagon wear, oxen fatigue, rest, and repairs
 - Eight authored event types with decisions and lasting consequences
 - Three river crossings with visible width, depth, current, and weather
-- Real-time hunting with moving wildlife, aiming, ammunition, carry limits,
+- Real-time graphical hunting in both rules profiles, with moving wildlife, aiming, ammunition, carry limits,
   spoilage, waste, expedition cost, and optional aim assist
 - Victory and loss summaries with survivors, losses, duration, resources,
   avoidable waste, score, and replay seed
@@ -143,13 +157,14 @@ scripts/approve-preview.sh
 ```
 
 The offline suite covers deterministic rules, 10,000 hunting fields, hostile
-save handling, route and event outcomes, profile invariance, accessibility, and
-180 journey-policy simulations. The balance lane runs 100,000 fixed seeds
-through the real journey and hunting engines. The Buzz lane validates, lints,
+save handling, route and event outcomes, display invariance, accessibility, and
+360 journey-policy simulations across both rules profiles. The balance lane runs 100,000 fixed seeds
+through 480 rules-profile, policy, difficulty, occupation, and departure-month cells using the real
+journey and hunting engines. The Buzz lane validates, lints,
 loads, toggles, and captures omaTrail inside a real Omarchy shell.
 
 The retained [render matrix](evidence/render-matrix/README.md) covers hunting,
-rivers, events, trail travel, and endings in both visual modes. The runtime lane
+rivers, events, trail travel, and endings in both rules profiles and both visual modes. The runtime lane
 also proves hunting timers pause while hidden, resume safely, and restore the
 exact persisted state after a shell restart.
 

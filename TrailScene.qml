@@ -46,6 +46,48 @@ Item {
 
   Rectangle {
     anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.margins: 12
+    width: 232
+    height: 30
+    color: root.greenMode ? "#020603" : "#fff4c7"
+    border.width: 2
+    border.color: root.inkColor
+    Text {
+      anchors.centerIn: parent
+      width: parent.width - 12
+      text: Journey.rulesProfileLabel(root.journeyState.rulesProfile).toUpperCase()
+      textFormat: Text.PlainText
+      elide: Text.ElideRight
+      horizontalAlignment: Text.AlignHCenter
+      color: root.inkColor
+      font.family: "monospace"
+      font.pixelSize: 11
+      font.bold: true
+      font.letterSpacing: 1
+    }
+  }
+
+  Repeater {
+    model: 4
+    Rectangle {
+      required property int index
+      x: root.width * (0.18 + index * 0.19)
+      y: root.height * 0.58 + (index % 2) * 5
+      width: 2
+      height: 14
+      color: root.inkColor
+      opacity: 0.72
+      Rectangle {
+        x: 2; y: 1; width: 12; height: 2
+        color: root.inkColor
+        rotation: index % 2 ? 8 : -8
+      }
+    }
+  }
+
+  Rectangle {
+    anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     height: parent.height * 0.42

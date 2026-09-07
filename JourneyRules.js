@@ -7,6 +7,27 @@
 var SAVE_SCHEMA_VERSION = 1
 var MAX_SAVE_BYTES = 65536
 
+var RULE_PROFILES = {
+  omatrail: {
+    label: "omaTrail",
+    year: 1848,
+    turnDays: 4,
+    startingCash: null,
+    fortPriceScale: 1.35,
+    minimumHuntAmmo: 1,
+    description: "Modern omaTrail balance with four-day travel turns and occupation budgets."
+  },
+  "classic-1978": {
+    label: "Classic 1978-inspired",
+    year: 1847,
+    turnDays: 14,
+    startingCash: 700,
+    fortPriceScale: 1.5,
+    minimumHuntAmmo: 40,
+    description: "Historically informed pressure with two-week turns, fixed cash, costly forts, and scarce ammunition."
+  }
+}
+
 var OCCUPATIONS = {
   banker: { label: "Banker", budget: 1600, healthBonus: 0, repairBonus: 0 },
   carpenter: { label: "Carpenter", budget: 1000, healthBonus: 0, repairBonus: 12 },
@@ -89,6 +110,16 @@ function canonicalDifficulty(value) {
   return name === "easy" || name === "hard" ? name : "normal"
 }
 
+function canonicalRulesProfile(value) {
+  var name = String(value || "").toLowerCase()
+  return name === "classic" || name === "classic-1978" || name.indexOf("classic 1978") === 0
+    ? "classic-1978" : "omatrail"
+}
+
+function rulesProfileLabel(value) {
+  return RULE_PROFILES[canonicalRulesProfile(value)].label
+}
+
 function canonicalOccupation(value) {
   var name = String(value || "").toLowerCase()
   return Object.prototype.hasOwnProperty.call(OCCUPATIONS, name) ? name : "farmer"
@@ -152,6 +183,8 @@ function createJourney(options) {
   var config = options || {}
   var occupation = canonicalOccupation(config.occupation)
   var difficulty = canonicalDifficulty(config.difficulty)
+  var rulesProfile = canonicalRulesProfile(config.rulesProfile)
+  var profileRules = RULE_PROFILES[rulesProfile]
   var occupationRules = OCCUPATIONS[occupation]
   return {
     schemaVersion: SAVE_SCHEMA_VERSION,
@@ -160,19 +193,20 @@ function createJourney(options) {
     seed: normalizedSeed(config.seed),
     rngState: normalizedSeed(config.seed),
     profile: String(config.profile || "").toLowerCase().indexOf("color") === 0 ? "color" : "green",
+    rulesProfile: rulesProfile,
     difficulty: difficulty,
     occupation: occupation,
     departureMonth: clamp(Math.round(finiteNumber(config.departureMonth, 4)), 3, 6),
     day: 1,
     month: clamp(Math.round(finiteNumber(config.departureMonth, 4)), 3, 6),
-    year: 1848,
+    year: profileRules.year,
     miles: 0,
     targetIndex: 1,
     act: 1,
     region: "woodland",
     pace: "steady",
     rations: "filling",
-    cash: occupationRules.budget,
+    cash: profileRules.startingCash === null ? occupationRules.budget : profileRules.startingCash,
     inventory: emptyInventory(),
     party: createParty(config.names, occupationRules.healthBonus),
     wagonCondition: clamp(88 + occupationRules.repairBonus, 1, 100),
@@ -185,6 +219,7 @@ function createJourney(options) {
     riverResult: null,
     daysRested: 0,
     hunts: 0,
+    lastHuntMile: -1,
     harvestedPounds: 0,
     wastedPounds: 0,
     losses: [],
@@ -237,14 +272,31 @@ function recoveryChancePercent(state, member, treatment) {
     + careBonus + doctorBonus - difficultyPenalty), 5, 95)
 }
 
+function minimumHuntAmmo(state) {
+  return RULE_PROFILES[canonicalRulesProfile(state && state.rulesProfile)].minimumHuntAmmo
+}
+
+function canHunt(state) {
+  if (!state || (state.phase !== "trail" && state.phase !== "landmark")) return false
+  if (state.inventory.ammunition < minimumHuntAmmo(state)) return false
+  return state.rulesProfile !== "classic-1978" || state.lastHuntMile !== state.miles
+}
+
+function purchaseCost(state, itemName, steps) {
+  if (!Object.prototype.hasOwnProperty.call(ITEMS, itemName)) return 0
+  var count = Math.max(1, Math.min(20, Math.round(finiteNumber(steps, 1))))
+  var priceScale = state && state.miles > 0
+    ? RULE_PROFILES[canonicalRulesProfile(state.rulesProfile)].fortPriceScale : 1
+  return Math.ceil(ITEMS[itemName].price * count * priceScale)
+}
+
 function buy(state, itemName, steps) {
   if (state.phase !== "store" && !(state.phase === "landmark" && ROUTE[state.targetIndex].type === "fort")) return state
   if (!Object.prototype.hasOwnProperty.call(ITEMS, itemName)) return state
   var item = ITEMS[itemName]
   var count = Math.max(1, Math.min(20, Math.round(finiteNumber(steps, 1))))
   var quantity = item.step * count
-  var priceScale = state.miles > 0 ? 1.35 : 1
-  var cost = Math.ceil(item.price * count * priceScale)
+  var cost = purchaseCost(state, itemName, count)
   if (cost > state.cash || state.inventory[itemName] + quantity > item.maximum) {
     state.message = "That purchase does not fit the budget or wagon"
     return state
@@ -269,8 +321,9 @@ function sell(state, itemName, steps) {
 }
 
 function canDepart(state) {
+  var minimumAmmo = minimumHuntAmmo(state)
   return state.inventory.oxen >= 2 && state.inventory.food >= 100
-    && state.inventory.ammunition >= 10 && state.inventory.clothing >= livingParty(state)
+    && state.inventory.ammunition >= minimumAmmo && state.inventory.clothing >= livingParty(state)
 }
 
 function seasonFor(month) {
@@ -329,13 +382,17 @@ function updateCalendar(state, days) {
 
 function applyPartyTravel(state, days) {
   var alive = livingParty(state)
-  var neededFood = alive * foodPerPerson(state.rations) * days
+  var classicRations = state.rations === "bare" ? 13 : state.rations === "meager" ? 18 : 23
+  var neededFood = state.rulesProfile === "classic-1978"
+    ? Math.ceil(classicRations * alive / 5) : alive * foodPerPerson(state.rations) * days
+  var pressureScale = state.rulesProfile === "classic-1978" ? Math.max(1, Math.round(days / 7)) : 1
   state.inventory.food = Math.max(0, state.inventory.food - neededFood)
   state.party.forEach(function(member) {
     if (!member.alive) return
-    member.health = clamp(member.health + healthDelta(state, member), 0, 100)
-    member.fatigue = clamp(member.fatigue + (state.pace === "steady" ? 3 : state.pace === "strenuous" ? 7 : 12), 0, 100)
-    member.morale = clamp(member.morale + (state.rations === "filling" ? 1 : -2), 0, 100)
+    member.health = clamp(member.health + healthDelta(state, member) * pressureScale, 0, 100)
+    member.fatigue = clamp(member.fatigue
+      + (state.pace === "steady" ? 3 : state.pace === "strenuous" ? 7 : 12) * pressureScale, 0, 100)
+    member.morale = clamp(member.morale + (state.rations === "filling" ? 1 : -2) * pressureScale, 0, 100)
     updateMemberCondition(state, member, "illness and exhaustion")
   })
   return state
@@ -365,10 +422,20 @@ function chooseEvent(state) {
   var chance = draw(state.rngState)
   state.rngState = chance.seed
   var eventChance = state.difficulty === "easy" ? 0.22 : state.difficulty === "hard" ? 0.38 : 0.30
+  if (state.rulesProfile === "classic-1978") eventChance = state.difficulty === "easy" ? 0.48 : state.difficulty === "hard" ? 0.68 : 0.58
   if (chance.value >= eventChance) return null
   var selection = draw(state.rngState)
   state.rngState = selection.seed
-  return clone(eligible[Math.min(eligible.length - 1, Math.floor(selection.value * eligible.length))])
+  if (state.rulesProfile !== "classic-1978")
+    return clone(eligible[Math.min(eligible.length - 1, Math.floor(selection.value * eligible.length))])
+  var weights = { illness: 16, breakdown: 18, weather: 20, trade: 8, aid: 6, conflict: 10, injury: 16, landmark: 6 }
+  var totalWeight = eligible.reduce(function(total, event) { return total + weights[event.category] }, 0)
+  var weightedRoll = selection.value * totalWeight
+  for (var index = 0; index < eligible.length; index++) {
+    weightedRoll -= weights[eligible[index].category]
+    if (weightedRoll < 0) return clone(eligible[index])
+  }
+  return clone(eligible[eligible.length - 1])
 }
 
 function arriveAtTarget(state) {
@@ -393,21 +460,30 @@ function travel(state) {
   if (livingParty(state) === 0) return finishJourney(state, "loss")
   if (state.inventory.oxen < 2 || state.wagonCondition <= 0) return finishJourney(state, "loss")
 
-  var days = 4
+  var days = RULE_PROFILES[state.rulesProfile].turnDays
   weatherFor(state)
   var terrainFactor = state.region === "mountains" ? 0.68 : state.region === "desert" ? 0.82 : 1
   var conditionFactor = Math.max(0.45, Math.min(state.wagonCondition, state.oxenCondition) / 100)
-  var distance = Math.max(12, Math.round(paceMiles(state.pace) * days * terrainFactor * conditionFactor))
+  var distance
+  if (state.rulesProfile === "classic-1978") {
+    var trailVariation = draw(state.rngState)
+    state.rngState = trailVariation.seed
+    var paceBonus = state.pace === "grueling" ? 40 : state.pace === "strenuous" ? 20 : 0
+    var classicMiles = 150 + state.inventory.oxen * 8 + paceBonus + Math.floor(trailVariation.value * 25)
+    distance = Math.max(40, Math.round(classicMiles * terrainFactor * conditionFactor))
+  } else distance = Math.max(12, Math.round(paceMiles(state.pace) * days * terrainFactor * conditionFactor))
   updateCalendar(state, days)
   applyPartyTravel(state, days)
   state.miles = Math.min(ROUTE[ROUTE.length - 1].mile, state.miles + distance)
-  state.oxenCondition = clamp(state.oxenCondition - (state.pace === "grueling" ? 4 : state.pace === "strenuous" ? 2 : 1), 0, 100)
+  var wearScale = state.rulesProfile === "classic-1978" ? 4 : 1
+  state.oxenCondition = clamp(state.oxenCondition
+    - (state.pace === "grueling" ? 4 : state.pace === "strenuous" ? 2 : 1) * wearScale, 0, 100)
 
   var wear = draw(state.rngState)
   state.rngState = wear.seed
   var wearChance = state.difficulty === "easy" ? 0.12 : state.difficulty === "hard" ? 0.26 : 0.18
   var heavyWear = state.difficulty === "easy" ? 4 : state.difficulty === "hard" ? 8 : 6
-  state.wagonCondition = clamp(state.wagonCondition - (wear.value < wearChance ? heavyWear : 1), 0, 100)
+  state.wagonCondition = clamp(state.wagonCondition - (wear.value < wearChance ? heavyWear : 1) * wearScale, 0, 100)
 
   if (livingParty(state) === 0 || state.wagonCondition === 0 || state.oxenCondition === 0)
     return finishJourney(state, "loss")
@@ -623,8 +699,14 @@ function repair(state) {
 
 function beginHunt(state) {
   if (state.phase !== "trail" && state.phase !== "landmark") return state
-  if (state.inventory.ammunition <= 0) {
-    state.message = "No ammunition remains"
+  var requiredAmmo = minimumHuntAmmo(state)
+  if (state.inventory.ammunition < requiredAmmo) {
+    state.message = state.rulesProfile === "classic-1978"
+      ? "Classic hunting needs at least 40 rounds" : "No ammunition remains"
+    return state
+  }
+  if (state.rulesProfile === "classic-1978" && state.lastHuntMile === state.miles) {
+    state.message = "Classic hunting is available again after traveling"
     return state
   }
   var seedDraw = draw(state.rngState)
@@ -638,8 +720,10 @@ function beginHunt(state) {
 function applyHuntResult(state, result) {
   if (state.phase !== "hunt" || !result || typeof result !== "object") return state
   var ammoUsed = clamp(Math.round(finiteNumber(result.ammoUsed, 0)), 0, state.inventory.ammunition)
-  var carried = clamp(Math.round(finiteNumber(result.carriedPounds, 0)), 0, 200)
-  var wasted = Math.max(0, Math.round(finiteNumber(result.wastedPounds, 0)))
+  var reportedCarried = clamp(Math.round(finiteNumber(result.carriedPounds, 0)), 0, 200)
+  var classicCarryLimit = state.rulesProfile === "classic-1978" ? 100 : 200
+  var carried = Math.min(reportedCarried, classicCarryLimit)
+  var wasted = Math.max(0, Math.round(finiteNumber(result.wastedPounds, 0))) + Math.max(0, reportedCarried - carried)
   var days = clamp(Math.round(finiteNumber(result.expeditionDays, 1)), 1, 2)
   var energy = clamp(Math.round(finiteNumber(result.partyEnergyCost, 8)), 0, 25)
   var injury = result.injury === true
@@ -647,6 +731,7 @@ function applyHuntResult(state, result) {
   state.inventory.ammunition -= ammoUsed
   state.inventory.food = Math.min(1200, state.inventory.food + carried)
   state.hunts += 1
+  if (state.rulesProfile === "classic-1978") state.lastHuntMile = state.miles
   state.harvestedPounds += carried + wasted
   state.wastedPounds += wasted
   updateCalendar(state, days)
@@ -676,7 +761,8 @@ function scoreJourney(state) {
 }
 
 function journeyDurationDays(state) {
-  return Math.max(0, (state.year - 1848) * 360 + (state.month - state.departureMonth) * 30 + state.day - 1)
+  var departureYear = RULE_PROFILES[state.rulesProfile].year
+  return Math.max(0, (state.year - departureYear) * 360 + (state.month - state.departureMonth) * 30 + state.day - 1)
 }
 
 function finishJourney(state, reason) {
@@ -689,6 +775,7 @@ function finishJourney(state, reason) {
     month: state.month,
     day: state.day,
     difficulty: state.difficulty,
+    rulesProfile: state.rulesProfile,
     resources: clone(state.inventory),
     wastedPounds: state.wastedPounds,
     score: scoreJourney(state),
@@ -706,7 +793,8 @@ function dispatch(current, action) {
   if (type === "SELL") return sell(state, String(input.item || ""), input.steps)
   if (type === "DEPART") {
     if (!canDepart(state)) {
-      state.message = "Departure needs 2 oxen, 100 food, 10 ammunition, and one coat per traveler"
+      state.message = "Departure needs 2 oxen, 100 food, " + minimumHuntAmmo(state)
+        + " ammunition, and one coat per traveler"
       return state
     }
     state.phase = "trail"
@@ -755,9 +843,9 @@ function validate(state) {
   if (state.gameVersion !== "0.1.0") errors.push("unsupported game version")
   var phases = ["store", "trail", "landmark", "event", "river", "river-result", "hunt", "victory", "loss"]
   if (phases.indexOf(state.phase) === -1) errors.push("invalid phase")
-  var numeric = ["seed", "rngState", "day", "month", "year", "miles", "targetIndex", "act", "cash", "wagonCondition", "oxenCondition", "temperature", "daysRested", "hunts", "harvestedPounds", "wastedPounds"]
+  var numeric = ["seed", "rngState", "day", "month", "year", "miles", "targetIndex", "act", "cash", "wagonCondition", "oxenCondition", "temperature", "daysRested", "hunts", "lastHuntMile", "harvestedPounds", "wastedPounds"]
   numeric.forEach(function(field) { if (!Number.isFinite(state[field])) errors.push(field + " must be finite") })
-  var integerFields = ["seed", "rngState", "day", "month", "year", "miles", "targetIndex", "act", "cash", "wagonCondition", "oxenCondition", "temperature", "daysRested", "hunts", "harvestedPounds", "wastedPounds"]
+  var integerFields = ["seed", "rngState", "day", "month", "year", "miles", "targetIndex", "act", "cash", "wagonCondition", "oxenCondition", "temperature", "daysRested", "hunts", "lastHuntMile", "harvestedPounds", "wastedPounds"]
   integerFields.forEach(function(field) {
     if (Number.isFinite(state[field]) && !Number.isInteger(state[field])) errors.push(field + " must be an integer")
   })
@@ -766,9 +854,10 @@ function validate(state) {
     errors.push("seed state is invalid")
   if (!Number.isInteger(state.day) || state.day < 1 || state.day > 30
     || !Number.isInteger(state.month) || state.month < 1 || state.month > 12
-    || !Number.isInteger(state.year) || state.year < 1848 || state.year > 1900)
+    || !Number.isInteger(state.year) || state.year < 1847 || state.year > 1900)
     errors.push("calendar is invalid")
   if (state.profile !== "green" && state.profile !== "color") errors.push("profile is invalid")
+  if (state.rulesProfile !== canonicalRulesProfile(state.rulesProfile)) errors.push("rules profile is invalid")
   if (state.difficulty !== canonicalDifficulty(state.difficulty)) errors.push("difficulty is invalid")
   if (!Object.prototype.hasOwnProperty.call(OCCUPATIONS, state.occupation)) errors.push("occupation is invalid")
   if (state.pace !== canonicalPace(state.pace)) errors.push("pace is invalid")
@@ -810,6 +899,7 @@ function validate(state) {
     || !Number.isInteger(state.oxenCondition) || state.oxenCondition < 0 || state.oxenCondition > 100)
     errors.push("resource state is invalid")
   if (!Number.isInteger(state.daysRested) || state.daysRested < 0 || !Number.isInteger(state.hunts) || state.hunts < 0
+    || !Number.isInteger(state.lastHuntMile) || state.lastHuntMile < -1 || state.lastHuntMile > state.miles
     || !Number.isInteger(state.wastedPounds) || state.wastedPounds < 0
     || !Number.isInteger(state.harvestedPounds) || state.harvestedPounds < state.wastedPounds)
     errors.push("hunt totals are invalid")
@@ -883,6 +973,7 @@ function validate(state) {
       || !Number.isInteger(state.ending.month) || state.ending.month !== state.month
       || !Number.isInteger(state.ending.day) || state.ending.day !== state.day
       || state.ending.difficulty !== state.difficulty
+      || state.ending.rulesProfile !== state.rulesProfile
       || !Number.isInteger(state.ending.wastedPounds) || state.ending.wastedPounds !== state.wastedPounds
       || !Number.isInteger(state.ending.score) || state.ending.score < 0
       || !Number.isInteger(state.ending.seed) || state.ending.seed !== state.seed)
@@ -921,6 +1012,13 @@ function parseSave(raw) {
     var document = JSON.parse(text)
     if (!document || document.schemaVersion !== SAVE_SCHEMA_VERSION || !document.state)
       return { valid: false, reason: "incompatible", state: null }
+    if (document.state.gameVersion === "0.1.0" && document.state.rulesProfile === undefined) {
+      document.state.rulesProfile = "omatrail"
+      if (document.state.ending && document.state.ending.rulesProfile === undefined)
+        document.state.ending.rulesProfile = "omatrail"
+    }
+    if (document.state.gameVersion === "0.1.0" && document.state.lastHuntMile === undefined)
+      document.state.lastHuntMile = -1
     var errors = validate(document.state)
     return errors.length ? { valid: false, reason: "invalid", state: null, errors: errors }
       : { valid: true, reason: "ok", state: document.state }
@@ -939,6 +1037,7 @@ function semanticSnapshot(state) {
 var api = {
   SAVE_SCHEMA_VERSION: SAVE_SCHEMA_VERSION,
   MAX_SAVE_BYTES: MAX_SAVE_BYTES,
+  RULE_PROFILES: RULE_PROFILES,
   OCCUPATIONS: OCCUPATIONS,
   ITEMS: ITEMS,
   ACTS: ACTS,
@@ -948,6 +1047,8 @@ var api = {
   normalizedSeed: normalizedSeed,
   draw: draw,
   canonicalDifficulty: canonicalDifficulty,
+  canonicalRulesProfile: canonicalRulesProfile,
+  rulesProfileLabel: rulesProfileLabel,
   canonicalOccupation: canonicalOccupation,
   canonicalPace: canonicalPace,
   canonicalRations: canonicalRations,
@@ -960,6 +1061,9 @@ var api = {
   averageFatigue: averageFatigue,
   illnessRiskPercent: illnessRiskPercent,
   recoveryChancePercent: recoveryChancePercent,
+  minimumHuntAmmo: minimumHuntAmmo,
+  canHunt: canHunt,
+  purchaseCost: purchaseCost,
   buy: buy,
   sell: sell,
   canDepart: canDepart,

@@ -111,7 +111,8 @@ Item {
         seed: journey.journeyState.seed,
         day: journey.journeyState.day,
         miles: journey.journeyState.miles,
-        targetIndex: journey.journeyState.targetIndex
+        targetIndex: journey.journeyState.targetIndex,
+        rulesProfile: journey.journeyState.rulesProfile
       },
       hunt: {
         phase: board.huntState.phase,
@@ -143,6 +144,7 @@ Item {
         season: Journey.seasonFor(state.month),
         ammo: state.inventory.ammunition,
         carryCapacity: Math.max(40, Math.min(200, 220 - state.inventory.food)),
+        rulesProfile: state.rulesProfile,
         journeyHunt: true
       })
     }
@@ -283,7 +285,8 @@ Item {
               }
               Text {
                 width: parent.width
-                text: root.greenMode ? "GREEN MONITOR FIELD TERMINAL" : "COLOR DELUXE FIELD JOURNAL"
+                text: (root.greenMode ? "GREEN MONITOR" : "COLOR DELUXE")
+                  + "  |  " + Journey.rulesProfileLabel(journey.journeyState.rulesProfile).toUpperCase()
                 textFormat: Text.PlainText
                 elide: Text.ElideRight
                 color: root.mutedColor

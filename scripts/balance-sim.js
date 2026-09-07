@@ -9,12 +9,13 @@ const { Worker, isMainThread, parentPort, workerData } = require("node:worker_th
 const Journey = require("../JourneyRules.js")
 const Hunt = require("../HuntingRules.js")
 
-const POLICY_VERSION = "omatrail-balance-v1"
+const POLICY_VERSION = "omatrail-balance-v2"
 const SEED_FORMULA = "Math.imul(runIndex + 1, 0x9e3779b1) >>> 0 || 1"
 const POLICIES = ["reckless", "naive", "skilled-heavy", "skilled-light", "exploit"]
 const DIFFICULTIES = ["easy", "normal", "hard"]
 const OCCUPATIONS = ["banker", "carpenter", "doctor", "farmer"]
 const MONTHS = [3, 4, 5, 6]
+const RULE_PROFILES = ["omatrail", "classic-1978"]
 const TERMINAL = new Set(["victory", "loss"])
 
 const POLICY = {
@@ -28,11 +29,13 @@ const POLICY = {
   },
   "skilled-heavy": {
     pace: "steady", rations: "filling", huntFood: 800, huntLimit: 8, maxHunts: 8,
-    stock: { oxen: 10, food: 1200, ammunition: 260, clothing: 10, medicine: 8, parts: 10 }
+    stock: { oxen: 10, food: 1200, ammunition: 260, clothing: 10, medicine: 8, parts: 10 },
+    classicStock: { oxen: 8, food: 900, ammunition: 180, clothing: 8, medicine: 5, parts: 10 }
   },
   "skilled-light": {
     pace: "steady", rations: "filling", huntFood: 110, huntLimit: 5, maxHunts: 2,
-    stock: { oxen: 10, food: 1050, ammunition: 60, clothing: 12, medicine: 10, parts: 10 }
+    stock: { oxen: 10, food: 1050, ammunition: 60, clothing: 12, medicine: 10, parts: 10 },
+    classicStock: { oxen: 8, food: 1000, ammunition: 60, clothing: 10, medicine: 6, parts: 10 }
   },
   exploit: {
     pace: "steady", rations: "filling", huntFood: 900, huntLimit: 14, maxHunts: 20,
@@ -50,7 +53,8 @@ function cells() {
     for (const difficulty of DIFFICULTIES)
       for (const occupation of OCCUPATIONS)
         for (const departureMonth of MONTHS)
-          result.push({ policy, difficulty, occupation, departureMonth })
+          for (const rulesProfile of RULE_PROFILES)
+            result.push({ policy, difficulty, occupation, departureMonth, rulesProfile })
   return result
 }
 
@@ -211,12 +215,17 @@ function emptyMetrics() {
 function playRun(cell, runIndex) {
   const seed = seedFor(runIndex)
   const rule = POLICY[cell.policy]
+  const startingStock = cell.rulesProfile === "classic-1978" && rule.classicStock ? rule.classicStock : rule.stock
   let state = Journey.createJourney({
     seed, profile: "green", difficulty: cell.difficulty,
-    occupation: cell.occupation, departureMonth: cell.departureMonth
+    occupation: cell.occupation, departureMonth: cell.departureMonth,
+    rulesProfile: cell.rulesProfile
   })
   const metrics = emptyMetrics()
-  state = stock(state, rule.stock)
+  state = stock(state, {
+    ...startingStock,
+    ammunition: Math.max(startingStock.ammunition, Journey.minimumHuntAmmo(state))
+  })
   state = checkedJourney(state, { type: "SET_PACE", value: rule.pace })
   state = checkedJourney(state, { type: "SET_RATIONS", value: rule.rations })
   state = checkedJourney(state, { type: "DEPART" })
@@ -238,7 +247,7 @@ function playRun(cell, runIndex) {
       } else if (state.wagonCondition < repairAt && state.inventory.parts > 0) {
         state = checkedJourney(state, { type: "REPAIR" })
         metrics.repairs += 1
-      } else if (state.inventory.food < rule.huntFood && state.inventory.ammunition > 0
+      } else if (state.inventory.food < rule.huntFood && Journey.canHunt(state)
           && metrics.hunts < rule.maxHunts) {
         state = checkedJourney(state, { type: "BEGIN_HUNT" })
         if (state.phase === "hunt") {
@@ -377,15 +386,25 @@ function runRange(totalRuns, startIndex, endIndex, progress) {
 function reportFromResults(totalRuns, results) {
   const byPolicy = {}
   for (const policy of POLICIES) byPolicy[policy] = summarize(results.filter((result) => result.cell.policy === policy))
+  const byRulesProfile = {}
+  for (const rulesProfile of RULE_PROFILES)
+    byRulesProfile[rulesProfile] = summarize(results.filter((result) => result.cell.rulesProfile === rulesProfile))
+  const byRulesAndPolicy = {}
+  for (const rulesProfile of RULE_PROFILES) {
+    byRulesAndPolicy[rulesProfile] = {}
+    for (const policy of POLICIES)
+      byRulesAndPolicy[rulesProfile][policy] = summarize(results.filter((result) =>
+        result.cell.rulesProfile === rulesProfile && result.cell.policy === policy))
+  }
   const byCell = {}
   for (const cell of cells()) {
-    const key = `${cell.policy}/${cell.difficulty}/${cell.occupation}/${cell.departureMonth}`
+    const key = `${cell.rulesProfile}/${cell.policy}/${cell.difficulty}/${cell.occupation}/${cell.departureMonth}`
     byCell[key] = summarize(results.filter((result) => result.cell.policy === cell.policy
       && result.cell.difficulty === cell.difficulty && result.cell.occupation === cell.occupation
-      && result.cell.departureMonth === cell.departureMonth))
+      && result.cell.departureMonth === cell.departureMonth && result.cell.rulesProfile === cell.rulesProfile))
   }
   const report = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     engineVersion: Journey.createJourney({}).gameVersion,
     contentVersion: Journey.createJourney({}).gameVersion,
     engineSha256: crypto.createHash("sha256")
@@ -398,6 +417,8 @@ function reportFromResults(totalRuns, results) {
     matrixCells: cells().length,
     overall: summarize(results),
     byPolicy,
+    byRulesProfile,
+    byRulesAndPolicy,
     byCell
   }
   const encoded = JSON.stringify(canonical(report))
@@ -458,7 +479,7 @@ async function main() {
   process.stdout.write(`${output}\n${report.aggregateSha256}\n`)
 }
 
-module.exports = { POLICY_VERSION, POLICIES, DIFFICULTIES, OCCUPATIONS, MONTHS, seedFor, cells, allocation, playRun, runStudy, runStudyParallel, canonical }
+module.exports = { POLICY_VERSION, POLICIES, DIFFICULTIES, OCCUPATIONS, MONTHS, RULE_PROFILES, seedFor, cells, allocation, playRun, runStudy, runStudyParallel, canonical }
 if (!isMainThread && workerData && workerData.mode === "balance") {
   parentPort.postMessage(runRange(workerData.totalRuns, workerData.range.start, workerData.range.end, 0))
 } else if (require.main === module) {
