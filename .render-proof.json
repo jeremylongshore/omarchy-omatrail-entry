@@ -1,29 +1,24 @@
 {
-  "fingerprint": "0c70a77496d1b10344c32fbcfbd4947159e05fce6bccd1c7842d26e2f0a42081",
-  "sourceCommit": "1fab4827cdeb5ba8e5cef9cb1df94a58b692843d",
+  "fingerprint": "751a97fb139d0e0f958075e6733c980725ef1dc61fa7d15706f18f90b1cc4812",
+  "sourceCommit": "7caee74149f5dfa01cbe36dbd2f27fc90fc7b469",
   "sourceDirty": false,
-  "sourcePackageSha256": "fa0ebd1f33af650c613306ce87093447f888b61c4a47c7639807d2a645784ecf",
-  "remotePackageSha256": "fa0ebd1f33af650c613306ce87093447f888b61c4a47c7639807d2a645784ecf",
+  "sourcePackageSha256": "632f8848c8ecb3e5e14278fb7ddea6a343b4be635fc9099b247efec3e284cc88",
+  "remotePackageSha256": "632f8848c8ecb3e5e14278fb7ddea6a343b4be635fc9099b247efec3e284cc88",
   "rig": "intent-ops-buzz/omarchy-rig",
-  "runId": "omatrail-968896",
-  "rawShellLogSha256": "758e6b0b6e5189e1c6aef909e01a221809e356be372f0a2bc75200ca15224eb2",
+  "runId": "omatrail-1935164",
+  "rawShellLogSha256": "d75d256f16b4d5143020bef38c75be78f8eb114c1ba022a909a6b8e63be2dfd2",
   "packageBoundary": "exact tracked HEAD archive",
   "fixture": "hunt-save.json",
-  "displayModeOverride": "",
+  "displayModeOverride": "Color Deluxe",
+  "rulesProfileOverride": "classic-1978",
   "evidenceBoundary": "isolated real Omarchy shell and QML under a dedicated headless compositor; plugin-specific fixture hook when present; live plugin IPC toggle; direct full-frame grim capture with no crop or image post-processing",
   "visualInspection": {
-    "status": "approved",
-    "previewSha256": "53bdd3955475c200eeb4c6822d0bd0361dae03bcd9797698aeeeb36c92cf1321",
-    "inspector": "jeremylongshore",
-    "inspectedAt": "2026-09-07T09:41:55Z",
-    "checks": [
-      "product value visible at marketplace scale",
-      "no primary content clipped",
-      "plugin-specific visual identity"
-    ]
+    "status": "pending",
+    "previewSha256": "923cb527146f96a1344e01e171366a00fabcb8a133d2a448084dff5658004869",
+    "checks": []
   },
-  "previewSha256": "53bdd3955475c200eeb4c6822d0bd0361dae03bcd9797698aeeeb36c92cf1321",
+  "previewSha256": "923cb527146f96a1344e01e171366a00fabcb8a133d2a448084dff5658004869",
   "dimensions": "1280 x 720",
   "nonblackCoverage": 1,
-  "capturedAt": "2026-09-07T06:01:52Z"
+  "capturedAt": "2026-09-07T15:49:09Z"
 }
