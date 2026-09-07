@@ -7,4 +7,7 @@ reports/balance/*
 !reports/mutation/
 reports/mutation/*
 !reports/mutation/mutation.json
+!reports/provenance/
+reports/provenance/*
+!reports/provenance/oregon78-similarity.json
 .stryker-tmp/

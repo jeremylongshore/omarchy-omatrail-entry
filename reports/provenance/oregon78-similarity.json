@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "method": "exact normalized expression comparison",
+  "candidate": {
+    "files": [
+      "BarWidget.qml",
+      "HuntingBoard.qml",
+      "HuntingRules.js",
+      "JourneyRules.js",
+      "JourneyView.qml",
+      "OmatrailButton.qml",
+      "Overlay.qml",
+      "SaveStore.qml",
+      "TrailScene.qml",
+      "assets/banner.svg",
+      "bin/omatrail-state",
+      "manifest.json"
+    ],
+    "sha256": "c097b5a4ec8b4073bc34b51c2092601c3b693475f934c4b2c34fc0f889c57d53"
+  },
+  "reference": {
+    "url": "https://github.com/TedThompson/OREGON78",
+    "commit": "38959e87c94886d7fee4d0da106322009f2ad2d4",
+    "file": "OREGON78.RC.abas",
+    "sha256": "f8a9995fbda5485cf61b03d21aaf39c60df4f43bcf42a1a035f0e11cda103f90"
+  },
+  "thresholds": {
+    "exactString": "at least four words and 20 normalized characters",
+    "proseNgramWords": 4,
+    "codeNgramTokens": 12,
+    "exactLineCharacters": 30
+  },
+  "metrics": {
+    "candidateStringLiterals": 1467,
+    "referenceStringLiterals": 289,
+    "exactStrings": [],
+    "sharedFourWordPhrases": [],
+    "sharedTwelveTokenCode": [],
+    "sharedNormalizedLines": []
+  },
+  "verdict": "NO_NONTRIVIAL_EXACT_MATCHES",
+  "limitation": "This deterministic exact-match audit can detect copied expression above its thresholds. It cannot prove independent creation or provide a legal conclusion."
+}

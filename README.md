@@ -89,13 +89,16 @@ Install and enable it with Omarchy:
 omarchy-plugin-add https://github.com/jeremylongshore/omarchy-omatrail-entry --enable
 ```
 
+The plugin uses the `perl` executable already supplied by stock Omarchy for its
+bounded save helper. It does not install packages or download runtime assets.
+
 For local development, copy the runtime files from a clean checkout:
 
 ```bash
-install -d "$HOME/.config/omarchy/plugins/omatrail"
+install -d "$HOME/.config/omarchy/plugins/io.github.jeremylongshore.omatrail"
 cp -R BarWidget.qml Overlay.qml JourneyView.qml TrailScene.qml HuntingBoard.qml \
   OmatrailButton.qml SaveStore.qml JourneyRules.js HuntingRules.js bin manifest.json \
-  "$HOME/.config/omarchy/plugins/omatrail/"
+  "$HOME/.config/omarchy/plugins/io.github.jeremylongshore.omatrail/"
 ```
 
 Restart or reload the Omarchy shell, then add omaTrail to the bar through shell
@@ -106,7 +109,7 @@ settings. The manifest ID is `io.github.jeremylongshore.omatrail`.
 Remove the installed plugin with Omarchy's confirmation prompt:
 
 ```bash
-omarchy-plugin-remove omatrail
+omarchy-plugin-remove io.github.jeremylongshore.omatrail
 ```
 
 Removal unloads omaTrail and removes its plugin directory. Saved journeys remain

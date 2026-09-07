@@ -94,6 +94,7 @@ test("classic travel, outfitting, events, and hunting differ without changing th
 
   const shortAmmo = trailReady({ rulesProfile: "classic-1978" })
   shortAmmo.inventory.ammunition = 39
+  assert.equal(Journey.minimumDepartureAmmo(shortAmmo), 40)
   assert.equal(Journey.minimumHuntAmmo(shortAmmo), 40)
   assert.match(Journey.dispatch(shortAmmo, { type: "BEGIN_HUNT" }).message, /at least 40 rounds/)
   shortAmmo.phase = "store"
@@ -263,6 +264,13 @@ test("the complete route graph is ordered, connected, and reaches every required
 test("store purchases, returns, caps, and departure prerequisites are enforced", () => {
   let state = newJourney({ occupation: "banker" })
   assert.equal(Journey.canDepart(state), false)
+  state.inventory = { oxen: 2, food: 100, ammunition: 9, clothing: 5, medicine: 0, parts: 0 }
+  assert.equal(Journey.minimumDepartureAmmo(state), 10)
+  assert.equal(Journey.minimumHuntAmmo(state), 1)
+  assert.equal(Journey.canDepart(state), false)
+  state.inventory.ammunition = 10
+  assert.equal(Journey.canDepart(state), true)
+  state = newJourney({ occupation: "banker" })
   const untouched = Journey.dispatch(state, { type: "BUY", item: "unknown" })
   assert.deepEqual(untouched.inventory, state.inventory)
   state = Journey.dispatch(state, { type: "BUY", item: "oxen", steps: 1 })

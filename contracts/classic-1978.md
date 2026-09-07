@@ -35,6 +35,11 @@ omaTrail. We extracted gameplay ideas, wrote a behavior contract in plain
 language, and independently implemented that contract in the existing
 deterministic omaTrail engine.
 
+The [provenance and expression audit](provenance.md) records the source ledger,
+reference commit and hashes, permitted-use boundary, automated comparison, and
+its limitations. The retained comparison found no nontrivial exact string,
+four-word prose, 12-token code, or normalized-line matches.
+
 ## What we learned and how we translated it
 
 The historical listing established a recognizable pattern: fixed outfitting
@@ -151,7 +156,7 @@ reran the full study.
 
 The retained report records 100,000 terminal journeys with zero nonterminal
 runs. Its aggregate SHA-256 is
-`776ddabcd55a089c6292a799f5fd60f8dacd8b753168ac237ae394e41fbbde7a`.
+`c6dfb3d1a8696ad235166e8d28ec3525e88820bd4b2cb1c1a4416553a9c8fe03`.
 Across both profiles, skilled-heavy wins 82.56 percent, skilled-light wins 77.22
 percent, and the exploit policy wins 51.82 percent. In the Classic profile, the
 two skilled policies win 99.16 and 99.12 percent, while exploit wins 98.96

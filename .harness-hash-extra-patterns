@@ -11,7 +11,9 @@ scripts/rig-verify.sh
 scripts/rig-render.sh
 scripts/rig-render-matrix.sh
 scripts/rig-runtime-audit.sh
+scripts/rig-install-lifecycle.sh
 scripts/balance-sim.js
+scripts/provenance-audit.js
 scripts/gates/.lane-manifest
 scripts/gates/*.sh
 scripts/gates/lib/preamble.sh
@@ -28,5 +30,7 @@ JourneyRules.js
 HuntingRules.js
 reports/balance/balance-100000.json
 reports/mutation/mutation.json
+reports/provenance/*
 evidence/render-matrix/*
 evidence/runtime/*
+evidence/install/*

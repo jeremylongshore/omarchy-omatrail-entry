@@ -30,6 +30,14 @@ test("manifest entry points exist and stay inside the repository", () => {
   }
 })
 
+test("installation and removal instructions use the manifest plugin ID", () => {
+  const manifest = JSON.parse(read("manifest.json"))
+  const readme = read("README.md")
+  assert.match(readme, new RegExp(`plugins/${manifest.id.replaceAll(".", "\\.")}`))
+  assert.match(readme, new RegExp(`omarchy-plugin-remove ${manifest.id.replaceAll(".", "\\.")}`))
+  assert.doesNotMatch(readme, /omarchy-plugin-remove omatrail(?:\s|$)/)
+})
+
 test("marketplace render settings select Color Deluxe without changing rules", () => {
   const settings = JSON.parse(read("e2e/render-settings.json"))
   assert.deepEqual(settings, {
@@ -99,6 +107,13 @@ test("render matrix retains both profiles across every critical scene", () => {
   assert.match(render, /noTcpConnectionAdded/)
   assert.notEqual(fs.statSync(path.join(root, "scripts/rig-render-matrix.sh")).mode & 0o111, 0)
   assert.notEqual(fs.statSync(path.join(root, "scripts/rig-runtime-audit.sh")).mode & 0o111, 0)
+  const installLifecycle = read("scripts/rig-install-lifecycle.sh")
+  assert.match(installLifecycle, /omarchy-plugin-add "\$URL" --enable --yes/)
+  assert.match(installLifecycle, /omarchy-plugin-disable "\$ID"/)
+  assert.match(installLifecycle, /omarchy-plugin-remove "\$ID" --yes/)
+  assert.match(installLifecycle, /git -C "\$TARGET" rev-parse HEAD/)
+  assert.match(installLifecycle, /entriesAfterFinalCleanup/)
+  assert.notEqual(fs.statSync(path.join(root, "scripts/rig-install-lifecycle.sh")).mode & 0o111, 0)
   const runtimeAudit = read("scripts/rig-runtime-audit.sh")
   assert.match(runtimeAudit, /LOG_OUT="\$\{OUT%\.json\}\.shell\.log"/)
   assert.match(runtimeAudit, /rawShellLogSha256/)

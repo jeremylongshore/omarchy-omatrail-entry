@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "engineVersion": "0.1.0",
   "contentVersion": "0.1.0",
-  "engineSha256": "5d6d66e23912a91f7ceff491710852ebbe50f7c6098e4e579dc15a55cb5bc679",
+  "engineSha256": "d784a46e2e0bd856afb3459c08154c02c977305c0803cbae582e6f84c52b30d7",
   "policyVersion": "omatrail-balance-v2",
   "policyDefinitions": {
     "reckless": {
@@ -106832,5 +106832,5 @@
       "riverFailureRate": 0.2932692307692308
     }
   },
-  "aggregateSha256": "776ddabcd55a089c6292a799f5fd60f8dacd8b753168ac237ae394e41fbbde7a"
+  "aggregateSha256": "c6dfb3d1a8696ad235166e8d28ec3525e88820bd4b2cb1c1a4416553a9c8fe03"
 }

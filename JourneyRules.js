@@ -14,6 +14,7 @@ var RULE_PROFILES = {
     turnDays: 4,
     startingCash: null,
     fortPriceScale: 1.35,
+    minimumDepartureAmmo: 10,
     minimumHuntAmmo: 1,
     description: "Modern omaTrail balance with four-day travel turns and occupation budgets."
   },
@@ -23,6 +24,7 @@ var RULE_PROFILES = {
     turnDays: 14,
     startingCash: 700,
     fortPriceScale: 1.5,
+    minimumDepartureAmmo: 40,
     minimumHuntAmmo: 40,
     description: "Historically informed pressure with two-week turns, fixed cash, costly forts, and scarce ammunition."
   }
@@ -276,6 +278,10 @@ function minimumHuntAmmo(state) {
   return RULE_PROFILES[canonicalRulesProfile(state && state.rulesProfile)].minimumHuntAmmo
 }
 
+function minimumDepartureAmmo(state) {
+  return RULE_PROFILES[canonicalRulesProfile(state && state.rulesProfile)].minimumDepartureAmmo
+}
+
 function canHunt(state) {
   if (!state || (state.phase !== "trail" && state.phase !== "landmark")) return false
   if (state.inventory.ammunition < minimumHuntAmmo(state)) return false
@@ -321,7 +327,7 @@ function sell(state, itemName, steps) {
 }
 
 function canDepart(state) {
-  var minimumAmmo = minimumHuntAmmo(state)
+  var minimumAmmo = minimumDepartureAmmo(state)
   return state.inventory.oxen >= 2 && state.inventory.food >= 100
     && state.inventory.ammunition >= minimumAmmo && state.inventory.clothing >= livingParty(state)
 }
@@ -793,7 +799,7 @@ function dispatch(current, action) {
   if (type === "SELL") return sell(state, String(input.item || ""), input.steps)
   if (type === "DEPART") {
     if (!canDepart(state)) {
-      state.message = "Departure needs 2 oxen, 100 food, " + minimumHuntAmmo(state)
+      state.message = "Departure needs 2 oxen, 100 food, " + minimumDepartureAmmo(state)
         + " ammunition, and one coat per traveler"
       return state
     }
@@ -1061,6 +1067,7 @@ var api = {
   averageFatigue: averageFatigue,
   illnessRiskPercent: illnessRiskPercent,
   recoveryChancePercent: recoveryChancePercent,
+  minimumDepartureAmmo: minimumDepartureAmmo,
   minimumHuntAmmo: minimumHuntAmmo,
   canHunt: canHunt,
   purchaseCost: purchaseCost,

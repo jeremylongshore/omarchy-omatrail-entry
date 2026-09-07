@@ -49,7 +49,7 @@ release evidence.
 
 The current balance report is `reports/balance/balance-100000.json`. Its
 aggregate SHA-256 is
-`776ddabcd55a089c6292a799f5fd60f8dacd8b753168ac237ae394e41fbbde7a`.
+`c6dfb3d1a8696ad235166e8d28ec3525e88820bd4b2cb1c1a4416553a9c8fe03`.
 All 100,000 runs reached a terminal state. Across both rules profiles,
 skilled-heavy won 82.56 percent, skilled-light won 77.22 percent, and exploit
 won 51.82 percent with a median score of 919. Within Classic, exploit remained
@@ -57,10 +57,11 @@ below both skilled policies on survival and scored far lower while averaging
 about 735 pounds of avoidable waste.
 
 The current mutation report is `reports/mutation/mutation.json`. The refreshed
-current-test run killed 464 of 497 covered mutants, left 33 survivors, recorded
-zero uncovered mutants, timeouts, or errors, and scored 93.36 percent against the 90
-percent break threshold. The report is Git-trackable and hash-pinned together
-with the mutation configuration and test corpus.
+current-test run generated 637 mutants, ignored 126 outside the selected
+behavioral boundary, killed 476 of 511 scored mutants, left 35 survivors,
+recorded zero uncovered mutants, timeouts, or errors, and scored 93.15 percent
+against the 90 percent break threshold. The report is Git-trackable and
+hash-pinned together with the mutation configuration and test corpus.
 
 The current candidate render ledger is `evidence/render-matrix/matrix.json`.
 It contains twenty 1280 by 720 frames over one source fingerprint: hunt, river,
