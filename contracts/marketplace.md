@@ -1,8 +1,8 @@
 # Marketplace claim ledger
 
-Every listing claim below names shipped source and executable evidence. A clean
-Buzz render receipt and human visual approval are still required before any
-submission.
+Every listing claim below names shipped source and executable evidence. The
+retained clean Buzz render receipt includes Jeremy Longshore's hash-bound visual
+approval of the exact marketplace preview.
 
 | Claim | Shipped source | Executable proof |
 | --- | --- | --- |

@@ -13,9 +13,15 @@
   "rulesProfileOverride": "omatrail",
   "evidenceBoundary": "isolated real Omarchy shell and QML under a dedicated headless compositor; plugin-specific fixture hook when present; live plugin IPC toggle; direct full-frame grim capture with no crop or image post-processing",
   "visualInspection": {
-    "status": "pending",
+    "status": "approved",
     "previewSha256": "c2dc140921ca327e310a876d8b46c99a622a4702f4f60eed42f28fe3eb8cc443",
-    "checks": []
+    "inspector": "jeremylongshore",
+    "inspectedAt": "2026-09-07T18:36:03Z",
+    "checks": [
+      "product value visible at marketplace scale",
+      "no primary content clipped",
+      "plugin-specific visual identity"
+    ]
   },
   "previewSha256": "c2dc140921ca327e310a876d8b46c99a622a4702f4f60eed42f28fe3eb8cc443",
   "dimensions": "1280 x 720",
