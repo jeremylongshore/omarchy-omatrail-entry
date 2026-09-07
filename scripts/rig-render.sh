@@ -13,7 +13,7 @@ set -uo pipefail
 TARGET="$(cd "${1:-$(dirname "$0")/..}" && pwd)"
 OUT="${2:-$TARGET/preview.png}"
 PROOF_OUT="${3:-$TARGET/.render-proof.json}"
-LOG_OUT="${4:-}"
+LOG_OUT="${4:-$TARGET/.render-shell.log}"
 AUDIT_OUT="${5:-}"
 HOST="${OMARCHY_RIG_HOST:-intent-ops-buzz}"
 CONTAINER="${OMARCHY_RIG_CONTAINER:-omarchy-rig}"
