@@ -69,7 +69,7 @@ claim to reproduce one specific historic journey.
 
 ## Install
 
-Once the repository is public, install and enable it with Omarchy:
+Install and enable it with Omarchy:
 
 ```bash
 omarchy-plugin-add https://github.com/jeremylongshore/omarchy-omatrail-entry --enable
@@ -86,6 +86,17 @@ cp -R BarWidget.qml Overlay.qml JourneyView.qml TrailScene.qml HuntingBoard.qml 
 
 Restart or reload the Omarchy shell, then add omaTrail to the bar through shell
 settings. The manifest ID is `io.github.jeremylongshore.omatrail`.
+
+## Remove
+
+Remove the installed plugin with Omarchy's confirmation prompt:
+
+```bash
+omarchy-plugin-remove omatrail
+```
+
+Removal unloads omaTrail and removes its plugin directory. Saved journeys remain
+in the state location documented below unless you remove them separately.
 
 ## Controls
 
