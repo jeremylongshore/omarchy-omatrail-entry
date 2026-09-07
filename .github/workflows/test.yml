@@ -16,12 +16,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - name: Deterministic audit profile
+        run: npm run audit
       - name: Race-suite stability (three concurrent repetitions)
         run: npm run test:race
       - name: Mutation quality floor
         run: npm run test:mutation
-      - name: Deterministic audit profile
-        run: npm run audit
       - name: ShellCheck developer and rig scripts
         run: |
           shellcheck --version
