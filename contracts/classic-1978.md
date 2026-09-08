@@ -174,11 +174,11 @@ reran the full study.
 
 The retained report records 100,000 terminal journeys with zero nonterminal
 runs. Its aggregate SHA-256 is
-`c6dfb3d1a8696ad235166e8d28ec3525e88820bd4b2cb1c1a4416553a9c8fe03`.
-Across both profiles, skilled-heavy wins 82.56 percent, skilled-light wins 77.22
-percent, and the exploit policy wins 51.82 percent. In the Classic profile, the
-two skilled policies win 99.16 and 99.12 percent, while exploit wins 98.96
-percent and earns a much lower median score: 1,523 versus 2,221 and 2,160. The
+`a439f456708ba3aaf9f56df643f3b69ded2bd440dc3aae1eacc53295b077dfd8`.
+Across both profiles, skilled-heavy wins 83.10 percent, skilled-light wins 78.17
+percent, and the exploit policy wins 52.59 percent. In the Classic profile, the
+two skilled policies win 99.16 and 99.07 percent, while exploit wins 98.95
+percent and earns a much lower median score: 1,522 versus 2,220 and 2,160. The
 exploit also averages about 735 pounds of avoidable waste.
 
 Those relationships are now executable acceptance tests. A stale report, a
