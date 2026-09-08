@@ -8,6 +8,24 @@ const Journey = require("../JourneyRules.js")
 const root = path.join(__dirname, "..")
 const read = (name) => fs.readFileSync(path.join(root, name), "utf8")
 
+test("installable tree excludes agent instruction files at every depth", () => {
+  const forbidden = new Set(["AGENTS.MD", "CLAUDE.MD"])
+  const developmentOnly = new Set([".git", ".stryker-tmp", "coverage", "node_modules"])
+  const violations = []
+
+  const inspect = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      if (developmentOnly.has(entry.name)) continue
+      const resolved = path.join(directory, entry.name)
+      if (entry.isDirectory()) inspect(resolved)
+      else if (forbidden.has(entry.name.toUpperCase())) violations.push(path.relative(root, resolved))
+    }
+  }
+
+  inspect(root)
+  assert.deepEqual(violations.sort(), [])
+})
+
 test("manifest declares one combined overlay and bar plugin", () => {
   const manifest = JSON.parse(read("manifest.json"))
   assert.equal(manifest.id, "io.github.jeremylongshore.omatrail")

@@ -11,3 +11,8 @@ reports/mutation/*
 reports/provenance/*
 !reports/provenance/oregon78-similarity.json
 .stryker-tmp/
+
+# Repository-root plugins are installed as complete checkouts. Agent guidance
+# must stay outside this installable tree at every depth.
+AGENTS.md
+CLAUDE.md
