@@ -70,8 +70,8 @@ Deluxe. Every PNG and raw shell log reconciles to its receipt.
 
 The current lifecycle receipt is
 `evidence/runtime/runtime-audit.json`. In its clean-source Buzz run, the hunt
-advanced from tick 0 to 10, hid and remained frozen at tick 11, resumed to tick
-21, and restored the same journey after a shell restart. The state SHA-256 was
+advanced from tick 0 to 10, hid and remained frozen at tick 10, resumed to tick
+20, and restored the same journey after a shell restart. The state SHA-256 was
 unchanged across restart, no persistent child or TCP connection was added, and
 the receipt records three open-hide cycles. RSS and timing are observations of
 the whole shell, not an attribution to this plugin.

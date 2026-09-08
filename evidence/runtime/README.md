@@ -14,6 +14,6 @@ fingerprint, source commit, dirty-state flag, package hashes, rig, run ID, and
 raw shell-log hash.
 
 The retained receipt was produced from clean source commit
-`636e71336a9eb0491af7fe3738dc43eaf4690875`; it records `sourceDirty: false`
+`b146e494909553b4ef8c66866e5425b12b066cc0`; it records `sourceDirty: false`
 and matching local and remote package hashes. It does not prove a complete
 journey, frame pacing, device-to-render latency, or long-soak memory behavior.
