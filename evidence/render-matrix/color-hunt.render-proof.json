@@ -1,12 +1,12 @@
 {
-  "fingerprint": "c06d266f8f44b1b9770334502a1ca4041a99b9c568d7ea9b0d958c5a77f8257e",
-  "sourceCommit": "ae86fc21848debc6a4ab33d8b951b8a2cc460d83",
+  "fingerprint": "04a840f835c616c0f76965c8ef8ae496e5dd08fef912b3f20aa30ba0b1668d30",
+  "sourceCommit": "bf719d41608f82ef367c291a3478e742b3c16a39",
   "sourceDirty": false,
-  "sourcePackageSha256": "9faa759f0a4546e020e59d97baa553b43bcbb4ee5c7e64aad38532f517bc92a2",
-  "remotePackageSha256": "9faa759f0a4546e020e59d97baa553b43bcbb4ee5c7e64aad38532f517bc92a2",
+  "sourcePackageSha256": "12990ec6cfdede901b7a8a674e7f14187b0c8b30cd5d98a53d2ad0ebf3bbf3e7",
+  "remotePackageSha256": "12990ec6cfdede901b7a8a674e7f14187b0c8b30cd5d98a53d2ad0ebf3bbf3e7",
   "rig": "intent-ops-buzz/omarchy-rig",
-  "runId": "omatrail-2197320",
-  "rawShellLogSha256": "e56a57cc73175ccca257b28a510e9168467e871b064f0775a6173515cc2b9120",
+  "runId": "omatrail-3230637",
+  "rawShellLogSha256": "503f3b52fa5d91af3c1b18dc7ea21bc64257968fe6eac35cebdd0b0bee51baae",
   "packageBoundary": "exact tracked HEAD archive",
   "fixture": "hunt-save.json",
   "displayModeOverride": "Color Deluxe",
@@ -14,11 +14,11 @@
   "evidenceBoundary": "isolated real Omarchy shell and QML under a dedicated headless compositor; plugin-specific fixture hook when present; live plugin IPC toggle; direct full-frame grim capture with no crop or image post-processing",
   "visualInspection": {
     "status": "pending",
-    "previewSha256": "5b556426947dd680179d34ecb42ff11f33bad4986c99e9636eb6000e25685612",
+    "previewSha256": "f7c4df3467a89a729de212aa3767414a91d0dc1f19c87f0146643e3561a157e2",
     "checks": []
   },
-  "previewSha256": "5b556426947dd680179d34ecb42ff11f33bad4986c99e9636eb6000e25685612",
+  "previewSha256": "f7c4df3467a89a729de212aa3767414a91d0dc1f19c87f0146643e3561a157e2",
   "dimensions": "1280 x 720",
   "nonblackCoverage": 1,
-  "capturedAt": "2026-09-07T18:00:09Z"
+  "capturedAt": "2026-09-08T03:01:47Z"
 }

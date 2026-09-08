@@ -21,7 +21,7 @@ scripts/rig-render-matrix.sh . evidence/render-matrix
 ```
 
 The retained artifacts were produced from clean source commit
-`ae86fc21848debc6a4ab33d8b951b8a2cc460d83`. All twenty receipts record
+`bf719d41608f82ef367c291a3478e742b3c16a39`. All twenty receipts record
 `sourceDirty: false`, one source fingerprint, and matching local and remote
 package hashes. Human approval of the separate marketplace preview remains
 hash-bound in `.render-proof.json`; it is not inferred from this matrix.

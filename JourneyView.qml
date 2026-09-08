@@ -474,7 +474,7 @@ Item {
               Column {
                 anchors.centerIn: parent; width: parent.width - 8; spacing: 2
                 Text { width: parent.width; text: modelData.name; textFormat: Text.PlainText; elide: Text.ElideRight; horizontalAlignment: Text.AlignHCenter; color: root.inkColor; font.family: root.fontFamily; font.pixelSize: 12; font.bold: true }
-                Text { width: parent.width; text: modelData.alive ? modelData.condition.toUpperCase() + " " + modelData.health : "LOST"; textFormat: Text.PlainText; elide: Text.ElideRight; horizontalAlignment: Text.AlignHCenter; color: root.mutedColor; font.family: root.fontFamily; font.pixelSize: 10 }
+                Text { width: parent.width; text: modelData.alive ? (modelData.ailment ? modelData.ailment.toUpperCase() : modelData.condition.toUpperCase()) + " " + modelData.health : "LOST"; textFormat: Text.PlainText; elide: Text.ElideRight; horizontalAlignment: Text.AlignHCenter; color: root.mutedColor; font.family: root.fontFamily; font.pixelSize: 10 }
               }
             }
           }

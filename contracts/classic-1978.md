@@ -47,6 +47,22 @@ money, an 1847 departure, travel in roughly two-week decisions, more expensive
 fort purchases, three ration levels, repeated trail hazards, mountain pressure,
 and a minimum ammunition threshold before hunting.
 
+It also established an important limit on the historical claim. The 1978
+listing uses unnamed "wild," "bad," and "serious" illness outcomes and can end
+in pneumonia. It does not name dysentery. Philip Bouchard's account of the
+1985 Apple II redesign identifies named diseases, named party members,
+landmarks, spare parts, graphical hunting, and tombstones as features of that
+later version. Dysentery belongs to the later visual game many players
+remember, not to the published 1978 illness routine.
+
+omaTrail therefore treats dysentery as a documented 1985-inspired addition
+available in either rules profile, not as a 1978-authentic rule. A named
+traveler can contract it, medicine or rest can produce a seeded recovery, and
+an unresolved case persists in the save. Pace, rations, weather, difficulty,
+occupation, and later rest affect whether the traveler recovers or loses
+health. This behavior is independently implemented with original text and no
+borrowed disease tables, prompts, art, or code.
+
 The Classic 1978-inspired profile translates those broad mechanics into
 omaTrail's own units and systems:
 
@@ -59,6 +75,8 @@ omaTrail's own units and systems:
 - fort prices use a 1.5 multiplier;
 - deterministic event pressure is higher and uses independently selected
   category weights;
+- fever and dysentery share the illness category's existing probability rather
+  than doubling the chance of an illness event;
 - a graphical hunt requires at least 40 rounds;
 - a hunt carries at most 100 pounds, and excess harvest is recorded as waste;
 - the party must travel to fresh ground before beginning another Classic hunt.
@@ -156,11 +174,11 @@ reran the full study.
 
 The retained report records 100,000 terminal journeys with zero nonterminal
 runs. Its aggregate SHA-256 is
-`c6dfb3d1a8696ad235166e8d28ec3525e88820bd4b2cb1c1a4416553a9c8fe03`.
-Across both profiles, skilled-heavy wins 82.56 percent, skilled-light wins 77.22
-percent, and the exploit policy wins 51.82 percent. In the Classic profile, the
-two skilled policies win 99.16 and 99.12 percent, while exploit wins 98.96
-percent and earns a much lower median score: 1,523 versus 2,221 and 2,160. The
+`a439f456708ba3aaf9f56df643f3b69ded2bd440dc3aae1eacc53295b077dfd8`.
+Across both profiles, skilled-heavy wins 83.10 percent, skilled-light wins 78.17
+percent, and the exploit policy wins 52.59 percent. In the Classic profile, the
+two skilled policies win 99.16 and 99.07 percent, while exploit wins 98.95
+percent and earns a much lower median score: 1,522 versus 2,220 and 2,160. The
 exploit also averages about 735 pounds of avoidable waste.
 
 Those relationships are now executable acceptance tests. A stale report, a

@@ -74,7 +74,8 @@ claim to reproduce one specific historic journey.
 - Two rules profiles, four occupations, three difficulty levels, and four departure months
 - An outfitter selling oxen, food, ammunition, clothing, medicine, and parts
 - Pace, rations, weather, wagon wear, oxen fatigue, rest, and repairs
-- Eight authored event types with decisions and lasting consequences
+- Nine authored events across eight categories, including stateful dysentery
+  whose outcome responds to medicine, rest, pace, rations, and trail pressure
 - Three river crossings with visible width, depth, current, and weather
 - Real-time graphical hunting in both rules profiles, with moving wildlife, aiming, ammunition, carry limits,
   spoilage, waste, expedition cost, and optional aim assist

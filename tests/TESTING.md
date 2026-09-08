@@ -49,17 +49,17 @@ release evidence.
 
 The current balance report is `reports/balance/balance-100000.json`. Its
 aggregate SHA-256 is
-`c6dfb3d1a8696ad235166e8d28ec3525e88820bd4b2cb1c1a4416553a9c8fe03`.
+`a439f456708ba3aaf9f56df643f3b69ded2bd440dc3aae1eacc53295b077dfd8`.
 All 100,000 runs reached a terminal state. Across both rules profiles,
-skilled-heavy won 82.56 percent, skilled-light won 77.22 percent, and exploit
-won 51.82 percent with a median score of 919. Within Classic, exploit remained
+skilled-heavy won 83.10 percent, skilled-light won 78.17 percent, and exploit
+won 52.59 percent with a median score of 909. Within Classic, exploit remained
 below both skilled policies on survival and scored far lower while averaging
 about 735 pounds of avoidable waste.
 
 The current mutation report is `reports/mutation/mutation.json`. The refreshed
-current-test run generated 637 mutants, ignored 126 outside the selected
-behavioral boundary, killed 476 of 511 scored mutants, left 35 survivors,
-recorded zero uncovered mutants, timeouts, or errors, and scored 93.15 percent
+current-test run generated 839 mutants, ignored 162 outside the selected
+behavioral boundary, killed 616 of 677 scored mutants, left 61 survivors,
+recorded zero uncovered mutants, timeouts, or errors, and scored 90.99 percent
 against the 90 percent break threshold. The report is Git-trackable and
 hash-pinned together with the mutation configuration and test corpus.
 
@@ -70,8 +70,8 @@ Deluxe. Every PNG and raw shell log reconciles to its receipt.
 
 The current lifecycle receipt is
 `evidence/runtime/runtime-audit.json`. In its clean-source Buzz run, the hunt
-advanced from tick 0 to 10, hid and remained frozen at tick 11, resumed to tick
-21, and restored the same journey after a shell restart. The state SHA-256 was
+advanced from tick 0 to 10, hid and remained frozen at tick 10, resumed to tick
+20, and restored the same journey after a shell restart. The state SHA-256 was
 unchanged across restart, no persistent child or TCP connection was added, and
 the receipt records three open-hide cycles. RSS and timing are observations of
 the whole shell, not an attribution to this plugin.

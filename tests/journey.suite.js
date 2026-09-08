@@ -19,8 +19,8 @@ function trailReady(options = {}) {
   return Journey.dispatch(buyStarter(newJourney(options)), { type: "DEPART" })
 }
 
-function forceEvent(state, category) {
-  const event = Journey.EVENTS.find((entry) => entry.category === category)
+function forceEvent(state, categoryOrId) {
+  const event = Journey.EVENTS.find((entry) => entry.id === categoryOrId || entry.category === categoryOrId)
   return { ...structuredClone(state), phase: "event", pendingEvent: structuredClone(event) }
 }
 
@@ -156,19 +156,19 @@ test("classic event pressure is deterministic and higher than the omaTrail profi
     return counts
   }
   assert.deepEqual(eventCounts("omatrail", "normal"), {
-    none: 276, "evt-fall": 15, "evt-aid": 2, "evt-trade": 24, "evt-fever": 25,
+    none: 276, "evt-fall": 15, "evt-aid": 2, "evt-trade": 24, "evt-dysentery": 15, "evt-fever": 10,
     "evt-dispute": 24, "evt-storm": 18, "evt-view": 10, "evt-axle": 6
   })
   assert.deepEqual(eventCounts("classic-1978", "easy"), {
-    none: 206, "evt-fall": 39, "evt-storm": 40, "evt-fever": 39, "evt-dispute": 11,
+    none: 206, "evt-fall": 39, "evt-storm": 40, "evt-dysentery": 15, "evt-fever": 24, "evt-dispute": 11,
     "evt-aid": 26, "evt-axle": 38, "evt-trade": 1
   })
   assert.deepEqual(eventCounts("classic-1978", "normal"), {
-    none: 169, "evt-axle": 46, "evt-fall": 47, "evt-storm": 47, "evt-fever": 46,
+    none: 169, "evt-axle": 46, "evt-fall": 47, "evt-storm": 47, "evt-dysentery": 15, "evt-fever": 31,
     "evt-dispute": 11, "evt-aid": 26, "evt-trade": 8
   })
   assert.deepEqual(eventCounts("classic-1978", "hard"), {
-    none: 129, "evt-axle": 54, "evt-fall": 54, "evt-storm": 55, "evt-fever": 47,
+    none: 129, "evt-axle": 54, "evt-fall": 54, "evt-storm": 55, "evt-dysentery": 15, "evt-fever": 32,
     "evt-dispute": 12, "evt-aid": 26, "evt-trade": 16, "evt-view": 7
   })
 })
@@ -366,7 +366,7 @@ test("all event categories expose bounded choices and deterministic consequences
       state.inventory.medicine = 3
       state.inventory.parts = 3
       state.inventory.ammunition = 50
-      state = forceEvent(state, event.category)
+      state = forceEvent(state, event.id)
       const replay = Journey.dispatch(structuredClone(state), { type: "EVENT_CHOICE", index: choice })
       const result = Journey.dispatch(state, { type: "EVENT_CHOICE", index: choice })
       assert.deepEqual(result, replay)
@@ -435,6 +435,125 @@ test("illness risk rises and recovery chance falls monotonically with worsening 
   assert.equal(Journey.averageFatigue(noLiving), 100)
   assert.equal(Journey.illnessRiskPercent(noLiving), 100)
   assert.equal(Journey.recoveryChancePercent(noLiving, null, "rest"), 0)
+})
+
+test("dysentery names a traveler, persists without recovery, and responds to care", () => {
+  const event = Journey.EVENTS.find((entry) => entry.id === "evt-dysentery")
+  assert.equal(event.ailment, "dysentery")
+  assert.deepEqual(event.choices, ["Use medicine", "Stop and rest", "Keep moving"])
+
+  let untreated = forceEvent(trailReady({ seed: 1045 }), event.id)
+  untreated = Journey.dispatch(untreated, { type: "EVENT_CHOICE", index: 2 })
+  assert.equal(untreated.party[0].ailment, "dysentery")
+  assert.equal(untreated.message, "Alex still has dysentery")
+  assert.deepEqual(Journey.validate(untreated), [])
+
+  const saved = Journey.parseSave(Journey.serializeSave(untreated))
+  assert.equal(saved.valid, true)
+  assert.equal(saved.state.party[0].ailment, "dysentery")
+
+  const harsh = structuredClone(untreated)
+  harsh.pace = "grueling"
+  harsh.rations = "bare"
+  harsh.miles = 100
+  harsh.targetIndex = 10
+  const comparison = structuredClone(harsh)
+  comparison.party[0].ailment = null
+  const traveledSick = Journey.dispatch(harsh, { type: "TRAVEL" })
+  const traveledWell = Journey.dispatch(comparison, { type: "TRAVEL" })
+  assert.ok(traveledSick.party[0].health < traveledWell.party[0].health)
+  assert.equal(traveledSick.party[0].ailment, "dysentery")
+
+  const rested = Journey.dispatch(structuredClone(untreated), { type: "REST" })
+  assert.equal(rested.party[0].ailment, null)
+  assert.match(rested.message, /recovered from dysentery/)
+
+  let medicated = forceEvent(trailReady({ seed: 1 }), event.id)
+  const medicineBefore = medicated.inventory.medicine
+  medicated = Journey.dispatch(medicated, { type: "EVENT_CHOICE", index: 0 })
+  assert.equal(medicated.inventory.medicine, medicineBefore - 1)
+  assert.equal(medicated.party[0].ailment, null)
+  assert.equal(medicated.message, "Alex recovers from dysentery")
+
+  let fatal = forceEvent(trailReady({ seed: 1045 }), event.id)
+  fatal.party[0].health = 5
+  fatal = Journey.dispatch(fatal, { type: "EVENT_CHOICE", index: 2 })
+  assert.equal(fatal.party[0].alive, false)
+  assert.equal(fatal.party[0].ailment, null)
+  assert.equal(fatal.losses[0].reason, "dysentery")
+  assert.equal(fatal.message, "Alex died of dysentery")
+
+  const color = Journey.dispatch(structuredClone(untreated), { type: "SET_PROFILE", value: "color" })
+  assert.deepEqual(Journey.semanticSnapshot(color), Journey.semanticSnapshot(untreated))
+})
+
+test("dysentery travel pressure is exact across pace, rations, weather, care, and rules", () => {
+  const cases = [
+    { seed: 1, pace: "steady", rations: "filling", difficulty: "normal", occupation: "farmer", rulesProfile: "omatrail", expectedWeather: "rain", expectedSick: 79, expectedWell: 81 },
+    { seed: 2, pace: "strenuous", rations: "meager", difficulty: "normal", occupation: "farmer", rulesProfile: "omatrail", expectedWeather: "rain", expectedSick: 70, expectedWell: 77 },
+    { seed: 3, pace: "grueling", rations: "bare", difficulty: "hard", occupation: "farmer", rulesProfile: "omatrail", emptyFood: true, expectedWeather: "rain", expectedSick: 43, expectedWell: 63 },
+    { seed: 4, pace: "steady", rations: "filling", difficulty: "easy", occupation: "doctor", rulesProfile: "omatrail", expectedWeather: "rain", expectedSick: 81, expectedWell: 82 },
+    { seed: 5, pace: "steady", rations: "filling", difficulty: "normal", occupation: "farmer", rulesProfile: "classic-1978", expectedWeather: "rain", expectedSick: 78, expectedWell: 82 },
+    { seed: 1, departureMonth: 6, pace: "steady", rations: "filling", difficulty: "normal", occupation: "farmer", rulesProfile: "omatrail", expectedWeather: "hot", expectedSick: 75, expectedWell: 79 }
+  ]
+
+  for (const scenario of cases) {
+    const sick = trailReady(scenario)
+    sick.pace = scenario.pace
+    sick.rations = scenario.rations
+    sick.miles = 100
+    sick.targetIndex = 10
+    sick.party[0].health = 80
+    sick.party[0].ailment = "dysentery"
+    if (scenario.emptyFood) sick.inventory.food = 0
+    const well = structuredClone(sick)
+    well.party[0].ailment = null
+    const sickResult = Journey.dispatch(sick, { type: "TRAVEL" })
+    const wellResult = Journey.dispatch(well, { type: "TRAVEL" })
+    assert.equal(sickResult.weather, scenario.expectedWeather)
+    assert.equal(sickResult.party[0].health, scenario.expectedSick)
+    assert.equal(wellResult.party[0].health, scenario.expectedWell)
+  }
+})
+
+test("dysentery treatment outcomes conserve time, medicine, health, and ailment state", () => {
+  const cases = [
+    { seed: 1, choice: 0, day: 1, medicine: 3, health: 70, ailment: null, message: "Alex recovers from dysentery" },
+    { seed: 1, choice: 1, day: 3, medicine: 4, health: 65, ailment: null, message: "Alex recovers from dysentery" },
+    { seed: 1, choice: 2, day: 1, medicine: 4, health: 61, ailment: null, message: "Alex recovers from dysentery" },
+    { seed: 1045, choice: 2, day: 1, medicine: 4, health: 48, ailment: "dysentery", message: "Alex still has dysentery" }
+  ]
+  for (const scenario of cases) {
+    let state = forceEvent(trailReady({ seed: scenario.seed }), "evt-dysentery")
+    state.party[0].health = 60
+    state.party[0].fatigue = 20
+    state.rngState = scenario.seed
+    state = Journey.dispatch(state, { type: "EVENT_CHOICE", index: scenario.choice })
+    assert.equal(state.day, scenario.day)
+    assert.equal(state.inventory.medicine, scenario.medicine)
+    assert.equal(state.party[0].health, scenario.health)
+    assert.equal(state.party[0].ailment, scenario.ailment)
+    assert.equal(state.message, scenario.message)
+  }
+
+  let injury = forceEvent(trailReady({ seed: 1 }), "evt-fall")
+  injury.party[0].health = 60
+  injury.party[0].fatigue = 20
+  injury.rngState = 1
+  injury = Journey.dispatch(injury, { type: "EVENT_CHOICE", index: 0 })
+  assert.equal(injury.party[0].health, 70)
+  assert.equal(injury.party[0].ailment, null)
+  assert.equal(injury.message, "Alex begins to recover")
+
+  let noSurvivor = forceEvent(trailReady({ seed: 1 }), "evt-dysentery")
+  noSurvivor.party.forEach((member) => {
+    member.alive = false
+    member.health = 0
+    member.condition = "lost"
+  })
+  noSurvivor = Journey.dispatch(noSurvivor, { type: "EVENT_CHOICE", index: 2 })
+  assert.equal(noSurvivor.message, "The party continues")
+  assert.equal(noSurvivor.phase, "trail")
 })
 
 test("party condition records a loss once and travel terminal conditions are explicit", () => {
@@ -698,7 +817,8 @@ test("a careful supply, repair, rest, and hunting policy can finish both rules p
     let state = Journey.dispatch(stock(newJourney({ seed, difficulty, rulesProfile, occupation: "banker" })), { type: "DEPART" })
     for (let turn = 0; turn < 500 && state.phase !== "victory" && state.phase !== "loss"; turn++) {
       if (state.phase === "trail") {
-        if (Journey.totalPartyHealth(state) < 55 || Journey.averageFatigue(state) > 70)
+        if (state.party.some((member) => member.alive && member.ailment)
+          || Journey.totalPartyHealth(state) < 55 || Journey.averageFatigue(state) > 70)
           state = Journey.dispatch(state, { type: "REST" })
         else if (state.wagonCondition < 35 && state.inventory.parts > 0) state = Journey.dispatch(state, { type: "REPAIR" })
         else if (state.oxenCondition < 40) state = Journey.dispatch(state, { type: "REST" })
@@ -813,10 +933,12 @@ test("save serialization is bounded by UTF-8 bytes and round trips valid state",
   const legacy = structuredClone(state)
   delete legacy.rulesProfile
   delete legacy.lastHuntMile
+  legacy.party.forEach((member) => { delete member.ailment })
   const migrated = Journey.parseSave(JSON.stringify({ schemaVersion: 1, state: legacy }))
   assert.equal(migrated.valid, true)
   assert.equal(migrated.state.rulesProfile, "omatrail")
   assert.equal(migrated.state.lastHuntMile, -1)
+  assert.ok(migrated.state.party.every((member) => member.ailment === null))
   const legacyEnding = Journey.finishJourney(structuredClone(state), "arrival")
   delete legacyEnding.rulesProfile
   delete legacyEnding.ending.rulesProfile
@@ -876,6 +998,7 @@ test("validation rejects hostile or corrupt state without accepting partial save
     (state) => { state.party[0].alive = "yes" },
     (state) => { state.party[0].fatigue = Number.POSITIVE_INFINITY },
     (state) => { state.party[0].condition = "unknown" },
+    (state) => { state.party[0].ailment = "injected" },
     (state) => { state.pendingEvent = { id: "evt-fever", choices: [] } },
     (state) => { state.river = { id: "oak-fork", options: ["teleport"] } },
     (state) => { state.ending = { reason: "arrival", score: 1 } }
