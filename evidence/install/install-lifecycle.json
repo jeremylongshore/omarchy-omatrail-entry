@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "repository": "https://github.com/jeremylongshore/omarchy-omatrail-entry.git",
-  "sourceCommit": "7e35a0691cc252504d1ca33cfa591357a81a416a",
+  "sourceCommit": "d3d48a212e73411a09130eb0a5093c08b5dfedf2",
   "sourceDirty": false,
   "pluginId": "io.github.jeremylongshore.omatrail",
   "rig": "intent-ops-buzz/omarchy-rig",
-  "runId": "omatrail-install-2175577",
+  "runId": "omatrail-install-3403834",
   "command": "omarchy-plugin-add <public-url> --enable --yes",
-  "rawShellLogSha256": "99f09016e7d64fd2debc7e53ac65e186d841403db2adecc25823ea7f4e4766c0",
+  "rawShellLogSha256": "2092f8648a36bbfda928c80df2f36acef46f18ef88616a082619ed9b495a83a7",
   "checks": {
     "addedEntries": 1,
     "enabledEntries": 1,
@@ -19,5 +19,5 @@
     "reinstalledEntries": 1,
     "entriesAfterFinalCleanup": 0
   },
-  "verifiedAt": "2026-09-07T17:39:52Z"
+  "verifiedAt": "2026-09-08T04:00:52Z"
 }
