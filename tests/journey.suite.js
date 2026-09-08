@@ -487,6 +487,75 @@ test("dysentery names a traveler, persists without recovery, and responds to car
   assert.deepEqual(Journey.semanticSnapshot(color), Journey.semanticSnapshot(untreated))
 })
 
+test("dysentery travel pressure is exact across pace, rations, weather, care, and rules", () => {
+  const cases = [
+    { seed: 1, pace: "steady", rations: "filling", difficulty: "normal", occupation: "farmer", rulesProfile: "omatrail", expectedWeather: "rain", expectedSick: 79, expectedWell: 81 },
+    { seed: 2, pace: "strenuous", rations: "meager", difficulty: "normal", occupation: "farmer", rulesProfile: "omatrail", expectedWeather: "rain", expectedSick: 70, expectedWell: 77 },
+    { seed: 3, pace: "grueling", rations: "bare", difficulty: "hard", occupation: "farmer", rulesProfile: "omatrail", emptyFood: true, expectedWeather: "rain", expectedSick: 43, expectedWell: 63 },
+    { seed: 4, pace: "steady", rations: "filling", difficulty: "easy", occupation: "doctor", rulesProfile: "omatrail", expectedWeather: "rain", expectedSick: 81, expectedWell: 82 },
+    { seed: 5, pace: "steady", rations: "filling", difficulty: "normal", occupation: "farmer", rulesProfile: "classic-1978", expectedWeather: "rain", expectedSick: 78, expectedWell: 82 },
+    { seed: 1, departureMonth: 6, pace: "steady", rations: "filling", difficulty: "normal", occupation: "farmer", rulesProfile: "omatrail", expectedWeather: "hot", expectedSick: 75, expectedWell: 79 }
+  ]
+
+  for (const scenario of cases) {
+    const sick = trailReady(scenario)
+    sick.pace = scenario.pace
+    sick.rations = scenario.rations
+    sick.miles = 100
+    sick.targetIndex = 10
+    sick.party[0].health = 80
+    sick.party[0].ailment = "dysentery"
+    if (scenario.emptyFood) sick.inventory.food = 0
+    const well = structuredClone(sick)
+    well.party[0].ailment = null
+    const sickResult = Journey.dispatch(sick, { type: "TRAVEL" })
+    const wellResult = Journey.dispatch(well, { type: "TRAVEL" })
+    assert.equal(sickResult.weather, scenario.expectedWeather)
+    assert.equal(sickResult.party[0].health, scenario.expectedSick)
+    assert.equal(wellResult.party[0].health, scenario.expectedWell)
+  }
+})
+
+test("dysentery treatment outcomes conserve time, medicine, health, and ailment state", () => {
+  const cases = [
+    { seed: 1, choice: 0, day: 1, medicine: 3, health: 70, ailment: null, message: "Alex recovers from dysentery" },
+    { seed: 1, choice: 1, day: 3, medicine: 4, health: 65, ailment: null, message: "Alex recovers from dysentery" },
+    { seed: 1, choice: 2, day: 1, medicine: 4, health: 61, ailment: null, message: "Alex recovers from dysentery" },
+    { seed: 1045, choice: 2, day: 1, medicine: 4, health: 48, ailment: "dysentery", message: "Alex still has dysentery" }
+  ]
+  for (const scenario of cases) {
+    let state = forceEvent(trailReady({ seed: scenario.seed }), "evt-dysentery")
+    state.party[0].health = 60
+    state.party[0].fatigue = 20
+    state.rngState = scenario.seed
+    state = Journey.dispatch(state, { type: "EVENT_CHOICE", index: scenario.choice })
+    assert.equal(state.day, scenario.day)
+    assert.equal(state.inventory.medicine, scenario.medicine)
+    assert.equal(state.party[0].health, scenario.health)
+    assert.equal(state.party[0].ailment, scenario.ailment)
+    assert.equal(state.message, scenario.message)
+  }
+
+  let injury = forceEvent(trailReady({ seed: 1 }), "evt-fall")
+  injury.party[0].health = 60
+  injury.party[0].fatigue = 20
+  injury.rngState = 1
+  injury = Journey.dispatch(injury, { type: "EVENT_CHOICE", index: 0 })
+  assert.equal(injury.party[0].health, 70)
+  assert.equal(injury.party[0].ailment, null)
+  assert.equal(injury.message, "Alex begins to recover")
+
+  let noSurvivor = forceEvent(trailReady({ seed: 1 }), "evt-dysentery")
+  noSurvivor.party.forEach((member) => {
+    member.alive = false
+    member.health = 0
+    member.condition = "lost"
+  })
+  noSurvivor = Journey.dispatch(noSurvivor, { type: "EVENT_CHOICE", index: 2 })
+  assert.equal(noSurvivor.message, "The party continues")
+  assert.equal(noSurvivor.phase, "trail")
+})
+
 test("party condition records a loss once and travel terminal conditions are explicit", () => {
   const state = trailReady()
   const member = state.party[0]
