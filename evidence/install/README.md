@@ -10,6 +10,11 @@ the clean local HEAD and both cloned installations resolve to that exact commit.
 The final removal leaves the isolated home with no omaTrail catalog entry or
 plugin directory.
 
+The retained receipt exercised public `main` commit
+`d3d48a212e73411a09130eb0a5093c08b5dfedf2` after the dysentery update was
+merged. Its raw log SHA-256 is recorded in the receipt and verified by the
+wrapper.
+
 Reproduce it with:
 
 ```bash

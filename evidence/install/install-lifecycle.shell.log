@@ -1,6 +1,6 @@
 lifecycle:add
-Cloning into '/tmp/omatrail-install-2175577/.config/omarchy/plugins/.add.tmp.109094'...
-Added io.github.jeremylongshore.omatrail into /tmp/omatrail-install-2175577/.config/omarchy/plugins/io.github.jeremylongshore.omatrail
+Cloning into '/tmp/omatrail-install-3403834/.config/omarchy/plugins/.add.tmp.152338'...
+Added io.github.jeremylongshore.omatrail into /tmp/omatrail-install-3403834/.config/omarchy/plugins/io.github.jeremylongshore.omatrail
 Enabled io.github.jeremylongshore.omatrail
 lifecycle:launch
 lifecycle:disable
@@ -12,8 +12,8 @@ Removed io.github.jeremylongshore.omatrail.
 Plugin was enabled and was unloaded from omarchy-shell.
 lifecycle:removed-count=0
 lifecycle:reinstall
-Cloning into '/tmp/omatrail-install-2175577/.config/omarchy/plugins/.add.tmp.110418'...
-Added io.github.jeremylongshore.omatrail into /tmp/omatrail-install-2175577/.config/omarchy/plugins/io.github.jeremylongshore.omatrail
+Cloning into '/tmp/omatrail-install-3403834/.config/omarchy/plugins/.add.tmp.153710'...
+Added io.github.jeremylongshore.omatrail into /tmp/omatrail-install-3403834/.config/omarchy/plugins/io.github.jeremylongshore.omatrail
 Enabled io.github.jeremylongshore.omatrail
 lifecycle:final-cleanup
 Removed io.github.jeremylongshore.omatrail.
