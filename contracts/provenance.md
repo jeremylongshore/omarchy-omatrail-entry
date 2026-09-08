@@ -17,6 +17,7 @@ opinion.
 | --- | --- | --- | --- |
 | [Creative Computing May/June 1978 scan](https://archive.org/details/CreativeComputingbetterScan197805), pages 132 to 139 | Primary publication. The issue carries a 1978 copyright notice. | Observe broad mechanics and historical context. | No |
 | [TedThompson/OREGON78](https://github.com/TedThompson/OREGON78) at `38959e87c94886d7fee4d0da106322009f2ad2d4` | Third-party Applesoft port under GPL-3.0. `OREGON78.RC.abas` SHA-256 is `f8a9995fbda5485cf61b03d21aaf39c60df4f43bcf42a1a035f0e11cda103f90`. | Locate and cross-check the published listing, then serve as a non-shipped comparison corpus. | No |
+| [Philip Bouchard's account of the 1985 Apple II redesign](https://www.died-of-dysentery.com/stories/imagining-appleII.html) | Historical design account by the 1985 version's designer and programmer. | Distinguish later named-disease and graphical-game features from the 1978 listing. | No |
 | omaTrail baseline at `682a0ae960e5ce4d9b5f3e411580bcf8c3708cfb` | Project-owned pre-Classic implementation. | Preserve the original omaTrail profile, story, interface, and graphical hunt. | Existing project source only |
 | Current QML, JavaScript, SVG, and fixture files | Project-authored implementation and assets. | Shipped product. | Yes |
 

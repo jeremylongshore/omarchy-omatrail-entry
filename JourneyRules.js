@@ -69,6 +69,7 @@ var ROUTE = [
 
 var EVENTS = [
   { id: "evt-fever", category: "illness", eligibility: "care-needed", title: "A fever spreads", text: "One traveler wakes feverish and weak.", choices: ["Use medicine", "Rest and watch", "Keep moving"], effects: ["use-medicine", "rest-recover", "continue-carefully"], source: "fictional-composite", destination: "trail" },
+  { id: "evt-dysentery", category: "illness", eligibility: "care-needed", ailment: "dysentery", title: "Dysentery strikes", text: "A traveler becomes dangerously weak and dehydrated.", choices: ["Use medicine", "Stop and rest", "Keep moving"], effects: ["use-medicine", "rest-recover", "continue-carefully"], source: "fictional-composite", destination: "trail" },
   { id: "evt-axle", category: "breakdown", eligibility: "wagon-worn", title: "The rear axle cracks", text: "The wagon lists toward the trail edge.", choices: ["Use a spare part", "Make a field repair", "Leave cargo"], effects: ["use-part", "field-repair", "discard-food"], source: "fictional-composite", destination: "trail" },
   { id: "evt-storm", category: "weather", eligibility: "always", title: "A hard storm closes in", text: "Wind flattens the grass and darkens the trail.", choices: ["Make camp", "Press on", "Seek lower ground"], effects: ["camp-one-day", "storm-damage", "detour"], source: "fictional-composite", destination: "trail" },
   { id: "evt-trade", category: "trade", eligibility: "trade-stock", title: "A small caravan stops", text: "Another party offers food for ammunition.", choices: ["Trade ammunition", "Decline", "Offer medicine instead"], effects: ["trade-ammunition", "no-effect", "trade-medicine"], source: "fictional-composite", destination: "trail" },
@@ -154,6 +155,7 @@ function createParty(names, healthBonus) {
       fatigue: 0,
       morale: 75,
       condition: "well",
+      ailment: null,
       alive: true
     }
   })
@@ -162,14 +164,16 @@ function createParty(names, healthBonus) {
 function updateMemberCondition(state, member, reason) {
   if (!member.alive) return member
   if (member.health <= 0) {
+    var lossReason = reason || member.ailment || "illness and exhaustion"
     member.health = 0
     member.alive = false
     member.condition = "lost"
+    member.ailment = null
     state.losses.push({
       id: member.id,
       name: member.name,
       day: state.day,
-      reason: reason || "illness and exhaustion"
+      reason: lossReason
     })
   } else if (member.health < 25) member.condition = "critical"
   else if (member.health < 50) member.condition = "poor"
@@ -373,6 +377,18 @@ function healthDelta(state, member) {
   return delta
 }
 
+function ailmentTravelPenalty(state, member) {
+  if (!member || member.ailment !== "dysentery") return 0
+  var penalty = state.pace === "grueling" ? 7 : state.pace === "strenuous" ? 4 : 2
+  penalty += state.rations === "bare" ? 6 : state.rations === "meager" ? 3 : 0
+  if (["snow", "cold", "storm", "hot"].indexOf(state.weather) >= 0) penalty += 2
+  if (state.inventory.food <= 0) penalty += 6
+  if (state.difficulty === "easy") penalty -= 1
+  if (state.difficulty === "hard") penalty += 1
+  if (state.occupation === "doctor") penalty -= 2
+  return Math.max(1, penalty) * (state.rulesProfile === "classic-1978" ? 2 : 1)
+}
+
 function updateCalendar(state, days) {
   state.day += days
   while (state.day > 30) {
@@ -395,11 +411,12 @@ function applyPartyTravel(state, days) {
   state.inventory.food = Math.max(0, state.inventory.food - neededFood)
   state.party.forEach(function(member) {
     if (!member.alive) return
-    member.health = clamp(member.health + healthDelta(state, member) * pressureScale, 0, 100)
+    member.health = clamp(member.health + healthDelta(state, member) * pressureScale
+      - ailmentTravelPenalty(state, member), 0, 100)
     member.fatigue = clamp(member.fatigue
       + (state.pace === "steady" ? 3 : state.pace === "strenuous" ? 7 : 12) * pressureScale, 0, 100)
     member.morale = clamp(member.morale + (state.rations === "filling" ? 1 : -2) * pressureScale, 0, 100)
-    updateMemberCondition(state, member, "illness and exhaustion")
+    updateMemberCondition(state, member, member.ailment || "illness and exhaustion")
   })
   return state
 }
@@ -432,13 +449,16 @@ function chooseEvent(state) {
   if (chance.value >= eventChance) return null
   var selection = draw(state.rngState)
   state.rngState = selection.seed
-  if (state.rulesProfile !== "classic-1978")
-    return clone(eligible[Math.min(eligible.length - 1, Math.floor(selection.value * eligible.length))])
-  var weights = { illness: 16, breakdown: 18, weather: 20, trade: 8, aid: 6, conflict: 10, injury: 16, landmark: 6 }
-  var totalWeight = eligible.reduce(function(total, event) { return total + weights[event.category] }, 0)
+  var weights = state.rulesProfile === "classic-1978"
+    ? { illness: 16, breakdown: 18, weather: 20, trade: 8, aid: 6, conflict: 10, injury: 16, landmark: 6 }
+    : { illness: 1, breakdown: 1, weather: 1, trade: 1, aid: 1, conflict: 1, injury: 1, landmark: 1 }
+  var categoryCounts = {}
+  eligible.forEach(function(event) { categoryCounts[event.category] = (categoryCounts[event.category] || 0) + 1 })
+  var categories = Object.keys(categoryCounts)
+  var totalWeight = categories.reduce(function(total, category) { return total + weights[category] }, 0)
   var weightedRoll = selection.value * totalWeight
   for (var index = 0; index < eligible.length; index++) {
-    weightedRoll -= weights[eligible[index].category]
+    weightedRoll -= weights[eligible[index].category] / categoryCounts[eligible[index].category]
     if (weightedRoll < 0) return clone(eligible[index])
   }
   return clone(eligible[eligible.length - 1])
@@ -517,6 +537,7 @@ function eventChoice(state, choiceIndex) {
   var effect = event.effects[index]
   var member = state.party.find(function(candidate) { return candidate.alive })
   if (event.category === "illness" || event.category === "injury") {
+    if (member && event.ailment) member.ailment = event.ailment
     var treatment = effect === "use-medicine" && state.inventory.medicine > 0 ? "medicine"
       : effect === "rest-recover" ? "rest" : "continue"
     if (treatment === "medicine") {
@@ -532,8 +553,13 @@ function eventChoice(state, choiceIndex) {
     if (member) member.health = clamp(member.health + (recovered
       ? treatment === "medicine" ? 10 : treatment === "rest" ? 5 : 1
       : treatment === "continue" ? -12 : -5), 0, 100)
-    if (member) updateMemberCondition(state, member, event.category)
-    state.message = member ? member.name + (recovered ? " begins to recover" : " grows weaker") : "The party continues"
+    if (member && recovered && event.ailment) member.ailment = null
+    if (member) updateMemberCondition(state, member, member.ailment || event.category)
+    if (!member) state.message = "The party continues"
+    else if (event.ailment && !member.alive) state.message = member.name + " died of " + event.ailment
+    else if (event.ailment && recovered) state.message = member.name + " recovers from " + event.ailment
+    else if (event.ailment) state.message = member.name + " still has " + event.ailment
+    else state.message = member.name + (recovered ? " begins to recover" : " grows weaker")
   } else if (effect === "use-part") {
     if (state.inventory.parts > 0) {
       state.inventory.parts -= 1
@@ -679,15 +705,28 @@ function rest(state) {
   var foodCost = livingParty(state) * foodPerPerson(state.rations) * 2
   var fed = state.inventory.food >= foodCost
   state.inventory.food = Math.max(0, state.inventory.food - foodCost)
+  var recoveredNames = []
   state.party.forEach(function(member) {
     if (!member.alive) return
     member.health = clamp(member.health + (fed ? 6 : -8), 0, 100)
     member.fatigue = clamp(member.fatigue - (fed ? 18 : 4), 0, 100)
-    updateMemberCondition(state, member, "hunger in camp")
+    if (member.ailment === "dysentery" && fed) {
+      var outcome = draw(state.rngState)
+      state.rngState = outcome.seed
+      var risk = illnessRiskPercent(state, member)
+      var recovery = recoveryChancePercent(state, member, "rest")
+      if (outcome.value * 100 < clamp(recovery - Math.round(risk * 0.25), 5, 95)) {
+        member.ailment = null
+        recoveredNames.push(member.name)
+      }
+    }
+    updateMemberCondition(state, member, member.ailment || (fed ? "illness and exhaustion" : "hunger in camp"))
   })
   state.oxenCondition = clamp(state.oxenCondition + (fed ? 5 : 1), 0, 100)
   if (livingParty(state) === 0) return finishJourney(state, "loss")
-  state.message = fed ? "The party rests for two days" : "Rest without food weakens the party"
+  state.message = recoveredNames.length
+    ? recoveredNames.join(", ") + " recovered from dysentery"
+    : fed ? "The party rests for two days" : "Rest without food weakens the party"
   return state
 }
 
@@ -837,6 +876,7 @@ function validateEventRecords() {
       errors.push(event.id + " has invalid effects")
     if (event.source !== "fictional-composite") errors.push(event.id + " has invalid source")
     if (event.destination !== "trail") errors.push(event.id + " has invalid destination")
+    if (event.ailment !== undefined && event.ailment !== "dysentery") errors.push(event.id + " has invalid ailment")
     if (event.title.length > 80 || event.text.length > 240) errors.push(event.id + " exceeds text bounds")
   })
   return errors
@@ -886,8 +926,9 @@ function validate(state) {
       || cleanText(member.name, 24) !== member.name
       || measures.some(function(value) { return !Number.isInteger(value) || value < 0 || value > 100 })
       || ["well", "poor", "critical", "lost"].indexOf(member.condition) === -1
+      || (member.ailment !== null && member.ailment !== "dysentery")
       || typeof member.alive !== "boolean"
-      || (!member.alive && (member.health !== 0 || member.condition !== "lost"))
+      || (!member.alive && (member.health !== 0 || member.condition !== "lost" || member.ailment !== null))
   }))
     errors.push("party member is invalid")
   if (!state.inventory || typeof state.inventory !== "object"
@@ -1025,6 +1066,11 @@ function parseSave(raw) {
     }
     if (document.state.gameVersion === "0.1.0" && document.state.lastHuntMile === undefined)
       document.state.lastHuntMile = -1
+    if (document.state.gameVersion === "0.1.0" && Array.isArray(document.state.party)) {
+      document.state.party.forEach(function(member) {
+        if (member && member.ailment === undefined) member.ailment = null
+      })
+    }
     var errors = validate(document.state)
     return errors.length ? { valid: false, reason: "invalid", state: null, errors: errors }
       : { valid: true, reason: "ok", state: document.state }
